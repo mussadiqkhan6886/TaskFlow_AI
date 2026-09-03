@@ -9,6 +9,7 @@ import { errorHandler } from "./middleware/errorHandler"
 import authRouter from "./routes/authRoutes"
 import userRouter from "./routes/userRoutes"
 import noteRoute from "./routes/noteRoutes"
+import { connectRedis } from "./config/connectRedis"
 
 dotenv.config()
 const app : Express = express()
@@ -18,7 +19,7 @@ app.use(cors(corsOptions))
 app.use(cookieParser())
 app.use(express.json())
 connectDB()
-
+connectRedis()
 app.use("/api/auth",authRouter)
 app.use("/api/users", userRouter)
 app.use("/api/notes", noteRoute)

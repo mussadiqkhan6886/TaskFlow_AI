@@ -3,6 +3,8 @@ import User from "../models/UserModel";
 import { updateUserSchema, userSchema } from "../schemas/userSchema";
 import bcrypt from "bcryptjs"
 import Note from "../models/NoteModel";
+import { redis } from "../config/connectRedis";
+import { deleteUserCache } from "../lib/helpers/deleteCache";
 
 interface filterQuery {
     status?: "Active" | "InActive"
@@ -25,7 +27,15 @@ export const getAllUsers = async (req: Request<{}, {}, {}, filterQuery>, res: Re
         }
     }
 
+    const redisUsers = await redis.get(`users?status=${status}&search=${search}`)
+
+    if(redisUsers){
+        res.status(200).json({success: true, users: JSON.parse(redisUsers)})
+        return
+    }
     const users = await User.find(filter).select("-password").lean().exec()
+
+    await redis.set(`users?status=${status}&search=${search}`, JSON.stringify(users), {EX: 120})
 
     res.status(200).json({
         success: true,
@@ -59,6 +69,8 @@ export const createNewUser = async (req: Request, res: Response) : Promise<void>
         email: data.email,
         role: data.role
         })
+
+        await deleteUserCache()
 
         res.status(201).json({success: true, message: "New User created",  user:{
             id:newUser._id,
@@ -110,13 +122,16 @@ export const updateUser = async (req: Request, res: Response) : Promise<void> =>
     }
 
     try{
-        const updatedUser = await User.findByIdAndUpdate(id, data, {new: true})
+        const updatedUser = await User.findByIdAndUpdate(id, data, {new: true, runValidators: true})
 
     if(!updatedUser){
         res.status(404).json({success: false, message: "No user found with this id"})
         return
     }
 
+    await deleteUserCache()
+    await redis.del("usersIds")
+    await redis.del(`user?id=${id}`)
     res.status(200).json({success: true, message: "User updated successfully",  user:{
         id:updatedUser._id,
         username:updatedUser.username,
@@ -160,6 +175,8 @@ export const deleteUser = async (req: Request, res: Response) : Promise<void> =>
         return
     }
 
+    await deleteUserCache()
+    await redis.del(`user?id=${id}`)
     res.status(204).send()
 }
 
@@ -171,12 +188,21 @@ export const getSingleUser = async (req: Request, res: Response) : Promise<void>
         return
     }
 
+    const redisUser = await redis.get(`user?id=${id}`)
+
+    if(redisUser){
+        res.status(200).json({success: true, user: JSON.parse(redisUser)})
+        return
+    }
+
     const user = await User.findById(id).select("-password").lean().exec()
 
     if(!user){
         res.status(404).json({success:false, message: "No user found with this id"})
         return
     }
+
+    await redis.set(`user?id=${id}`, JSON.stringify(user), {EX:120})
 
     res.status(200).json({
         success: true,
@@ -203,11 +229,15 @@ export const getCurrentUser = async (req: Request, res: Response) : Promise<void
 }
 
 export const getUsersIds = async (req: Request, res: Response) : Promise<void> => {
-    const users = await User.find({role: {$ne: "Admin"}}).select("id username").lean().exec()
     
-    if(!users){
-        res.status(404).json({success:false, message: "No users found"})
+    const redisIds = await redis.get("usersIds")
+    
+    if(redisIds){
+        res.status(200).json({success: true, usersId: JSON.parse(redisIds)})
         return
     }
+    const users = await User.find({role: {$ne: "Admin"}}).select("id username").lean().exec()
+
+    await redis.set(`usersIds`, JSON.stringify(users), {EX:60})
     res.status(200).json({success: true, usersId: users})
 }
