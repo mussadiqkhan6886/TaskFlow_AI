@@ -4,10 +4,12 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "seed": "tsx src/seed.ts",
     "dev": "nodemon",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [
     "fullstack",
@@ -38,9 +40,12 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/mongoose-sequence": "^3.0.11",
     "@types/node": "^22.20.1",
+    "@types/supertest": "^7.2.1",
     "nodemon": "^3.1.14",
+    "supertest": "^7.2.2",
     "ts-node": "^10.9.2",
     "tsx": "^4.23.12",
-    "typescript": "~5.7.3"
+    "typescript": "~5.7.3",
+    "vitest": "^5.0.0"
   }
 }
