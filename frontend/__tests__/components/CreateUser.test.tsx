@@ -19,14 +19,15 @@ vi.mock("next/navigation", () => ({
 }))
 
 describe("create user", () => {
+    beforeEach(() => {
+            vi.clearAllMocks();
+        });
     it("shall render create user component", () => {
         renderWithQuery(<CreateUser />)
         expect(screen.getByText("Username")).toBeInTheDocument()
     })
     it("will create a user successfully", async () => {
-        beforeEach(() => {
-            vi.clearAllMocks();
-        });
+        
         const mockedFn = vi.mocked(createUser)
         mockedFn.mockResolvedValue({
             _id: "123",
@@ -61,7 +62,7 @@ describe("create user", () => {
 
             expect(mockedFn).toHaveBeenCalledTimes(1);
 
-            expect(pushMock).toHaveBeenCalledWith("/admin/users")
+            expect(pushMock).toHaveBeenCalledWith("/admin/dashboard/users")
         })
     })
 
