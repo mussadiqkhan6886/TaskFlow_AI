@@ -1,12 +1,12 @@
-import DeleteNote from "@/components/DeleteNote"
+import DeleteUser from "@/components/DeleteUser"
 import { renderWithQuery } from "@/lib/helpers/renderWithQuery"
-import { deleteNote } from "@/server/note"
+import { deleteUser } from "@/server/user"
 import { screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
 
-vi.mock("@/server/note", () => ({
-    deleteNote: vi.fn()
+vi.mock("@/server/user", () => ({
+    deleteUser: vi.fn()
 }))
 
 const refreshMock = vi.fn()
@@ -16,17 +16,17 @@ vi.mock("next/navigation", () => ({
     })
 }))
 
-describe("delete note", () => {
+describe("delete User", () => {
 
     beforeEach(() => {
         vi.clearAllMocks()
     })
     
-    it("will delete note successfully", async () => {
+    it("will delete user successfully", async () => {
         const user = userEvent.setup()
-        const mockedFun = vi.mocked(deleteNote)
+        const mockedFun = vi.mocked(deleteUser)
         mockedFun.mockResolvedValue(undefined)
-        renderWithQuery(<DeleteNote id={"123"} />)
+        renderWithQuery(<DeleteUser id={"123"} />)
 
         await user.click(screen.getByRole("button", {name: /Delete/i}))
 
@@ -37,27 +37,27 @@ describe("delete note", () => {
 
     })
 
-    it("will not delete note and gives Error", async () => {
+    it("will not delete user and gives Error", async () => {
         const user = userEvent.setup()
-        const mockedFun = vi.mocked(deleteNote)
+        const mockedFun = vi.mocked(deleteUser)
         mockedFun.mockRejectedValue(new Error("Something went wrong"))
-        renderWithQuery(<DeleteNote id={"123"} />)
+        renderWithQuery(<DeleteUser id={"123"} />)
         const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
         await user.click(screen.getByRole("button", {name: /Delete/i}))
         await waitFor(() => {
             expect(alertMock).toHaveBeenCalledWith("Something went wrong");
         });
         alertMock.mockRestore(); 
-    })     
-    
+    })      
+
     it("shows loading state while deleting", async () => {
-        const mockedFn = vi.mocked(deleteNote);
+        const mockedFn = vi.mocked(deleteUser);
 
         mockedFn.mockImplementation(
             () => new Promise(() => {})
         );
 
-        renderWithQuery(<DeleteNote id="123" />);
+        renderWithQuery(<DeleteUser id="123" />);
 
         const user = userEvent.setup();
 

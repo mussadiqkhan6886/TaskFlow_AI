@@ -14,8 +14,8 @@ const DeleteUser = ({id}: {id:string}) => {
         onSuccess(){
             router.refresh()
         },
-        onError(){
-            alert("Cant delete user")
+        onError(err){
+            alert(err.message)
         }
     })
   return (
