@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 
 interface Props {
-    user: Required<UserType>,
+    user: UserType,
     id: string
 }
 
