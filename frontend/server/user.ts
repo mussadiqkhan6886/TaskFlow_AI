@@ -25,7 +25,6 @@ export const getUser = async (id: string) : Promise<Required<UserType>> => {
 
 export const updateUser = async (data: updateUserData) : Promise<UserType> => {
     const {id, ...newData} = data
-    console.log(newData)
     const result = await fetchHelper<{user: UserType}>(`users/${data.id}`, {
         method: "PATCH",
         headers: {"Content-Type": "application/json"},
