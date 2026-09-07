@@ -55,7 +55,8 @@ describe("create user", () => {
                 password: "1234",
                 role: "Employee",
                 status: "Active"
-            })
+            },
+            expect.anything())
         })
 
         await waitFor(() => {

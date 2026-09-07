@@ -73,7 +73,8 @@ describe("Login Page", () => {
             expect(login).toHaveBeenCalledWith({
                 username: "mk",
                 password: "mk123",
-            });
+            },
+ expect.anything());
 
             expect(pushMock)
                 .toHaveBeenCalledWith(

@@ -31,7 +31,8 @@ describe("delete User", () => {
         await user.click(screen.getByRole("button", {name: /Delete/i}))
 
         await waitFor(() => {
-            expect(mockedFun).toHaveBeenCalledWith("123")
+            expect(mockedFun).toHaveBeenCalledWith("123",
+ expect.anything())
             expect(refreshMock).toHaveBeenCalledTimes(1)
         })
 

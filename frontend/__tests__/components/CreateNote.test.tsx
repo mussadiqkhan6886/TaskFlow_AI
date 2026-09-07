@@ -70,7 +70,8 @@ describe("create a note", () => {
                 title: "Hello World",
                 description: "this is description of testing",
                 priority: "Low"
-            })
+            },
+            expect.anything())
             
         })
 

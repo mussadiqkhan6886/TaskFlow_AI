@@ -65,7 +65,8 @@ describe("Edit User", () => {
                 password: "immk123",
                 role: "Manager",
                 status: "InActive",
-            })
+            },
+            expect.anything())
             expect(pushMock)
                 .toHaveBeenCalledWith(
                     "/admin/dashboard/users"
@@ -90,7 +91,8 @@ describe("Edit User", () => {
             expect(mockedFn).toHaveBeenCalledWith({
                 id:"123",
                 username: "immk",
-            })
+            },
+            expect.anything())
             expect(pushMock)
                 .toHaveBeenCalledWith(
                     "/admin/dashboard/users"

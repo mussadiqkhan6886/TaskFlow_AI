@@ -230,8 +230,8 @@ describe("Users Page", () => {
 
     expect(requiredRole)
       .toHaveBeenCalledWith([
-        "Admin",
-        "Manager"
+        "Manager",
+        "Admin"
       ]);
 
   });

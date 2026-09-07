@@ -41,14 +41,15 @@ describe("Edit Note", () => {
     })
 
     it("should update multiple changed fields successfully", async () => {
-        const mockedFn = vi.mocked(updateNote)
-        mockedFn.mockResolvedValue(Note)
         vi.mocked(getUsersId).mockResolvedValue([
             {
                 _id: "123",
                 username: "john"
             }
             ])
+        const mockedFn = vi.mocked(updateNote)
+        mockedFn.mockResolvedValue(Note)
+        
         renderWithQuery(<UpdateNote note={Note} />)
 
         const user = userEvent.setup()
@@ -76,7 +77,8 @@ describe("Edit Note", () => {
                 description: "new description of note",
                 priority: "Medium",
                 status: "Completed",
-            })
+            },
+            expect.anything())
             expect(pushMock)
                 .toHaveBeenCalledWith(
                     "/admin/dashboard/notes"
@@ -101,7 +103,8 @@ describe("Edit Note", () => {
             expect(mockedFn).toHaveBeenCalledWith({
                 id:"456",
                 title: "new title testing",
-            })
+            },
+            expect.anything())
             expect(pushMock)
                 .toHaveBeenCalledWith(
                     "/admin/dashboard/notes"
