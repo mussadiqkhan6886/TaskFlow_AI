@@ -5,7 +5,7 @@ import { getAllUsers } from "@/server/user";
 import Link from "next/link";
 import React from "react";
 
-const Page = async ({searchParams}: {searchParams: Promise<{search?: string, status?: string}>}) => {
+const UsersPage = async ({searchParams}: {searchParams: Promise<{search?: string, status?: string}>}) => {
   const me = await requiredRole(["Manager", "Admin"])
   
   const {search = "", status = ""} = await searchParams
@@ -129,4 +129,4 @@ const Page = async ({searchParams}: {searchParams: Promise<{search?: string, sta
   );
 };
 
-export default Page;
+export default UsersPage;

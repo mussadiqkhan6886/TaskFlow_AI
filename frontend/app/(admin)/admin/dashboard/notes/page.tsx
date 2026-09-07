@@ -6,7 +6,7 @@ import { getAllNotes } from "@/server/note";
 import Link from "next/link";
 import React from "react";
 
-const Page = async ({searchParams}: {searchParams: Promise<{status?:string, priority?:string}>}) => {
+const NotesPage = async ({searchParams}: {searchParams: Promise<{status?:string, priority?:string}>}) => {
   
   const {status = "", priority=""} = await searchParams
 
@@ -113,4 +113,4 @@ const Page = async ({searchParams}: {searchParams: Promise<{status?:string, prio
   );
 };
 
-export default Page;
+export default NotesPage;
