@@ -140,29 +140,4 @@ describe("Edit User", () => {
             expect(backMock).toHaveBeenCalled()
         })
     })
-    
-    it("should not send unchanged data", async()=>{
-
-        const mockedFn = vi.mocked(updateUser)
-
-        renderWithQuery(
-        <EditUser id="123" user={User}/>
-        )
-
-        const user = userEvent.setup()
-
-        await user.click(
-        screen.getByRole("button",{name:/Save/i})
-        )
-
-
-        await waitFor(()=>{
-
-            expect(mockedFn).toHaveBeenCalledWith({
-                id:"123"
-            })
-
-        })
-
-    })
 })

@@ -51,6 +51,14 @@ describe("create a note", () => {
         })
 
         renderWithQuery(<CreateNote />)
+         await waitFor(() => {
+        expect(
+            screen.getByRole("option", {
+                name:"john"
+            })
+        ).toBeInTheDocument()
+    })
+
 
         const user = userEvent.setup()
 
@@ -87,13 +95,22 @@ describe("create a note", () => {
         mockedFunction.mockRejectedValue(
             new Error("Something went wrong")
         );
-        renderWithQuery(<CreateNote />)
         vi.mocked(getUsersId).mockResolvedValue([
             {
                 _id:"123",
                 username:"john"
             }
         ]);
+
+        renderWithQuery(<CreateNote />)
+         await waitFor(() => {
+        expect(
+            screen.getByRole("option", {
+                name:"john"
+            })
+        ).toBeInTheDocument()
+    })
+
         const user = userEvent.setup()
         await user.selectOptions( screen.getByLabelText("Note For"), "123" );
         

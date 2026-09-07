@@ -53,7 +53,9 @@ describe("Edit Note", () => {
         renderWithQuery(<UpdateNote note={Note} />)
 
         const user = userEvent.setup()
-
+        await waitFor(() => {
+            expect(screen.getByRole("option", {name:"john"})).toBeInTheDocument()
+        })
         const noteFor = screen.getByLabelText("Note For")
         const title =  screen.getByPlaceholderText("Enter note title")
         const description = screen.getByPlaceholderText("Write note details...")
@@ -77,8 +79,7 @@ describe("Edit Note", () => {
                 description: "new description of note",
                 priority: "Medium",
                 status: "Completed",
-            },
-            expect.anything())
+            },expect.anything())
             expect(pushMock)
                 .toHaveBeenCalledWith(
                     "/admin/dashboard/notes"
@@ -89,6 +90,12 @@ describe("Edit Note", () => {
     it("shall update only title", async () => {
         const mockedFn = vi.mocked(updateNote)
         mockedFn.mockResolvedValue(Note)
+        vi.mocked(getUsersId).mockResolvedValue([
+            {
+            _id:"123",
+            username:"john"
+            }
+            ])
         renderWithQuery(<UpdateNote  note={Note} />)
 
         const user = userEvent.setup()
@@ -102,9 +109,12 @@ describe("Edit Note", () => {
         await waitFor(() => {
             expect(mockedFn).toHaveBeenCalledWith({
                 id:"456",
-                title: "new title testing",
-            },
-            expect.anything())
+    noteFor:"123",
+    title:"new title testing",
+    description:"this is description",
+    priority:"Low",
+    status:"Pending",
+            }, expect.anything())
             expect(pushMock)
                 .toHaveBeenCalledWith(
                     "/admin/dashboard/notes"

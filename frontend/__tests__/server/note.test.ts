@@ -116,7 +116,18 @@ describe("note server functions", () => {
             }
         )
 
-        expect(fetchHelper).toHaveBeenCalledWith("notes")
+        expect(fetchHelper).toHaveBeenCalledWith("notes", {
+        method: "POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify({
+            noteFor: "456",
+            title: "new title",
+            description: "new desc of note",
+            priority: "High"
+        })
+    })
 
         expect(result).toEqual({
                 noteFor: "456",
@@ -156,7 +167,7 @@ describe("note server functions", () => {
     it("will not update note and gives error", async () => {
         vi.mocked(fetchHelper).mockRejectedValue(new Error("something went wrong"))
 
-        expect(await updateNote({
+        await expect(updateNote({
                 noteFor: "123",
                 id: "456",
                 title: "testing",
@@ -185,11 +196,7 @@ describe("note server functions", () => {
 
     it("will not create new note and gives error", async () => {
         vi.mocked(fetchHelper).mockRejectedValue(new Error("something went wrong"))
-
-
-        expect(fetchHelper).toHaveBeenCalledWith("notes")
-
-        expect(await createNote(
+        await expect(createNote(
             {
                 noteFor: "456",
                 title: "new title",
@@ -197,12 +204,27 @@ describe("note server functions", () => {
                 priority: "High"
             }
         )).rejects.toThrow("something went wrong")
+
+        expect(fetchHelper).toHaveBeenCalledWith("notes",     {
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify({
+            noteFor: "456",
+                title: "new title",
+                description: "new desc of note",
+                priority: "High"
+        })
+    }
+)
+
     })
 
     it("will not delete note and gives error", async () => {
         vi.mocked(fetchHelper).mockRejectedValue(new Error ("something went wrong"))
 
-        expect(await deleteNote("123")).rejects.toThrow("something went wrong")
+        await expect(deleteNote("123")).rejects.toThrow("something went wrong")
         expect(fetchHelper).toHaveBeenCalledWith("notes/123", {
         method:"DELETE"
         })

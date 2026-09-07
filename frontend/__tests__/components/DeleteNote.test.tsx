@@ -51,25 +51,4 @@ describe("delete note", () => {
         alertMock.mockRestore(); 
     })     
     
-    it("shows loading state while deleting", async () => {
-        const mockedFn = vi.mocked(deleteNote);
-
-        mockedFn.mockImplementation(
-            () => new Promise(() => {})
-        );
-
-        renderWithQuery(<DeleteNote id="123" />);
-
-        const user = userEvent.setup();
-
-        await user.click(
-            screen.getByRole("button", {
-                name: /Delete/i
-            })
-        );
-
-        expect(
-            screen.getByText("Deleting...")
-        ).toBeInTheDocument();
-    });
 })

@@ -164,7 +164,7 @@ describe("user server functions", () => {
     it("will not update user and gives error", async () => {
         vi.mocked(fetchHelper).mockRejectedValue(new Error("something went wrong"))
 
-        expect(await updateUser({id: "456", ...Users[0]})).rejects.toThrow("something went wrong")
+        await expect(updateUser({id: "456", ...Users[0]})).rejects.toThrow("something went wrong")
 
         expect(fetchHelper).toHaveBeenCalledWith("users/456", {
         method:"PATCH",
@@ -179,10 +179,8 @@ describe("user server functions", () => {
 
     it("will not create new user and gives error", async () => {
         vi.mocked(fetchHelper).mockRejectedValue(new Error("something went wrong"))
-
-
         
-        expect(await createUser(
+        await expect(createUser(
             {
                 username: "immk",
                 password: "immk123",
@@ -191,13 +189,27 @@ describe("user server functions", () => {
                 status: "Active"
             }
         )).rejects.toThrow("something went wrong")
-        expect(fetchHelper).toHaveBeenCalledWith("users")
+
+        expect(fetchHelper).toHaveBeenCalledWith("users",     {
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify({
+            username: "immk",
+            password: "immk123",
+            email: "immk@gmail.com",
+            role: "Employee",
+            status: "Active"
+        })
+    }
+)
     })
 
     it("will not delete user and gives error", async () => {
         vi.mocked(fetchHelper).mockRejectedValue(new Error ("something went wrong"))
 
-        expect(await deleteUser("123")).rejects.toThrow("something went wrong")
+        await expect(deleteUser("123")).rejects.toThrow("something went wrong")
         expect(fetchHelper).toHaveBeenCalledWith("users/123", {
         method:"DELETE"
         })

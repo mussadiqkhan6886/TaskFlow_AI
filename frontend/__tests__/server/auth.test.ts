@@ -41,7 +41,7 @@ describe("auth server functions", () => {
             })
         })
 
-        expect(await login({
+        await expect(login({
             username: "mk",
             password: "wrong"
         })).rejects.toThrow("Wrong Password")
