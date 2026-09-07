@@ -11,7 +11,7 @@ interface dataType {
   password: string
 }
 
-const Page = () => {
+const LoginPage = () => {
 
   const [data, setData] = useState<dataType>({
     username: "",
@@ -115,4 +115,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default LoginPage;
