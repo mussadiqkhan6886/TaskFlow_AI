@@ -14,7 +14,7 @@ export const login = async (req: Request, res: Response) : Promise<void> => {
     const user = await User.findOne({username}).lean().exec()
 
     if(!user || user.status === "InActive"){
-        res.status(404).json({message: "No username found with this username"})
+        res.status(404).json({message: "No username found with this username or he is inactive"})
         return
     }
 
