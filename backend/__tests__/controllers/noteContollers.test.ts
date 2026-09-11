@@ -25,9 +25,7 @@ vi.mock("../../src/config/connectRedis", () => ({
         del: vi.fn()
     }
 }))
-vi.mock("../../src/controllers/noteControllers", () => ({
-    getAllNotes: vi.fn()
-}))
+
 
 const Notes = [
     {
