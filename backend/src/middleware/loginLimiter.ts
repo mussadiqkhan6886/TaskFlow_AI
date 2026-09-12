@@ -1,4 +1,6 @@
-import {rateLimit} from "express-rate-limit"
+import {rateLimit, MemoryStore} from "express-rate-limit"
+
+export const loginLimiterStore = new MemoryStore()
 
 export const loginLimiter = rateLimit({
     windowMs: 5 * 60 * 1000,
@@ -9,5 +11,6 @@ export const loginLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    skipSuccessfulRequests: true
+    skipSuccessfulRequests: true,
+    store: loginLimiterStore
 })

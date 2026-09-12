@@ -3,7 +3,7 @@ import User from "../../src/models/UserModel"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
-vi.mock("../../src/models/userModel",()=>({
+vi.mock("../../src/models/UserModel",()=>({
     default:{
         findOne: vi.fn()
     }

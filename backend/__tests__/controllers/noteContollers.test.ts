@@ -456,11 +456,11 @@ describe("note controller", () => {
         vi.mocked(Note.findOneAndDelete).mockResolvedValue(null)
         await deleteNote(req, res)
 
-        expect(Note.findOneAndDelete).not.toHaveBeenCalled()
+        expect(Note.findOneAndDelete).toHaveBeenCalled()
         expect(deleteNoteCache).not.toHaveBeenCalled()
 
         expect(res.status).toHaveBeenCalledWith(404)
-        expect(res.json).toHaveBeenCalledWith({success:false, message: "not note found with this id"})
+        expect(res.json).toHaveBeenCalledWith({success:false, message: "no note found with this id"})
     })
     it("will not delete note if id is not given and send status of 400", async () => {
         req = {

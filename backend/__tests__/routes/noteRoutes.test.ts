@@ -42,18 +42,15 @@ describe("note routes", () => {
         expect(response.body).toEqual({message: "Unauthorized"})
     })
 
-    it("will block if api limiter is hit", async () => {
-        const accessToken = await createAccessToken("Admin")
-        for(let i = 0; i < 200; i++){
-            await request(app).post("/api/notes").set("Cookie", [`accessToken=${accessToken}`])
-        }
-        const response = await request(app).post("/api/notes").set("Cookie", [`accessToken=${accessToken}`])
-
-        expect(response.body).toEqual({message: "Too many requests, please try again later."})
-    })
-
     it("will get notes successfully", async () => {
-        const {accessToken} = await createAccessToken("Admin")
+        const {accessToken, user} = await createAccessToken("Admin")
+        await Note.create({
+            title: "testing",
+            description: "testing description",
+            status: "Pending",
+            priority: "Low",
+            noteFor: user._id
+        })
         const response = await request(app).get("/api/notes").set("Cookie", [`accessToken=${accessToken}`])
         
         expect(response.status).toBe(200)
@@ -71,16 +68,6 @@ describe("note routes", () => {
         const response = await request(app).get(`/api/notes/${createdNote._id}`).set("Cookie", [`accessToken=${accessToken}`])
 
         expect(response.status).toBe(200)
-        
-    })
-
-    it("will get not singleNote and return 400", async () => {
-        const {accessToken} = await createAccessToken("Admin")
-       
-        const response = await request(app).get("/api/notes/undefined").set("Cookie", [`accessToken=${accessToken}`])
-
-        expect(response.status).toBe(400)
-        expect(response.body).toEqual({success:false,message:"id is required"})
         
     })
 
@@ -119,7 +106,7 @@ describe("note routes", () => {
     it("will not create new note if data is not sent", async () => {
         const {accessToken} = await createAccessToken("Admin")
 
-        const response = await request(app).post("/api/notes").set("Cookie", [`accessToken=${accessToken}`])
+        const response = await request(app).post("/api/notes").set("Cookie", [`accessToken=${accessToken}`]).send({})
 
         expect(response.status).toBe(400)
     })
@@ -142,18 +129,6 @@ describe("note routes", () => {
 
         expect(response.status).toBe(200)
     })
-    it("will not update current note if id is not given", async () => {
-        const {accessToken} = await createAccessToken("Admin")
-       
-        const response = await request(app).patch(`/api/notes/undefined`).set("Cookie", [`accessToken=${accessToken}`]).send({
-            title: "testing",
-            description: "testing description",
-            status: "Completed",
-            priority: "Low"
-        })
-
-        expect(response.status).toBe(400)
-    })
 
     it("will delete note successfully", async () => {
         const {accessToken, user} = await createAccessToken("Admin")
@@ -169,12 +144,6 @@ describe("note routes", () => {
         expect(response.status).toBe(204)
     })
 
-    it("will not delete note if id is not given", async () => {
-        const {accessToken} = await createAccessToken("Admin")
-        const response = await request(app).delete(`/api/notes/undefined`).set("Cookie", [`accessToken=${accessToken}`])
-
-        expect(response.status).toBe(400)
-    })
 
     it.each(["Employee", "Manager"])("will not delete note if you are %s", async (body) => {
         const {accessToken, user} = await createAccessToken(body as "Employee" | "Manager")

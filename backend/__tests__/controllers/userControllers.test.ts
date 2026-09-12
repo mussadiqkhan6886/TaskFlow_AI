@@ -261,14 +261,25 @@ describe("user controller", () => {
     })
 
     it("should return 409 when username or email already exists while creating new user", async () => {
-
         req = {
             body:{
                 username:"mussadiq",
                 email:"test@gmail.com",
-                password:"123456"
+                password:"123456",
+                role: "Admin"
             }
         }
+
+
+        vi.mocked(userSchema.safeParse).mockReturnValue({
+            success: true,
+            data: {
+                username: "mussadiq",
+                email: "test@gmail.com",
+                password: "123456",
+                role: "Admin"
+            }
+        } as any)
 
 
         const duplicateError = {
@@ -439,6 +450,14 @@ describe("user controller", () => {
             }
         }
 
+        vi.mocked(updateUserSchema.safeParse).mockReturnValue({
+            success: true,
+            data: {
+                username: "mussadiq",
+                email: "test@gmail.com",
+            }
+        } as any)
+
 
         const duplicateError = {
             code:11000
@@ -453,7 +472,7 @@ describe("user controller", () => {
 
 
         expect(User.findByIdAndUpdate).toHaveBeenCalled()
-
+        
         expect(res.status)
             .toHaveBeenCalledWith(409)
 

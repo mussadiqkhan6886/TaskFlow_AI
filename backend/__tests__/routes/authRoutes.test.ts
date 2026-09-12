@@ -3,6 +3,7 @@ import request from "supertest"
 import User from "../../src/models/UserModel";
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
+import { loginLimiterStore } from "../../src/middleware/loginLimiter";
 
 const user = (hashedPassword: string, status: "Active" | "InActive" = "Active") => ({
             username: "immk",
@@ -16,6 +17,7 @@ describe("auth routes", () => {
     
     beforeEach(async()=>{
         await User.deleteMany({})
+        loginLimiterStore.resetAll()
     })
 
     it("will login user successfully", async () => {
@@ -27,7 +29,7 @@ describe("auth routes", () => {
         const response = await request(app)
                             .post("/api/auth/login")
                             .send({
-                                username: "mk",
+                                username: "immk",
                                 password: "1234"
                      })
 
@@ -82,7 +84,7 @@ describe("auth routes", () => {
         const response = await request(app)
             .post("/api/auth/login")
             .send({
-                username:"mk",
+                username:"immk",
                 password:"1234"
             })
 
@@ -109,7 +111,7 @@ describe("auth routes", () => {
         const response = await request(app)
             .post("/api/auth/login")
             .send({
-                username:"mk",
+                username:"immk",
                 password:"123"
             })
 
