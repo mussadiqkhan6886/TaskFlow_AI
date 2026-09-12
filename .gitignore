@@ -3,6 +3,7 @@
 
 # Environment Variables
 .env
+.env.test
 .env*.local
 *.env
 
@@ -11,6 +12,14 @@ frontend/.next/
 frontend/out/
 backend/dist/
 backend/build/
+
+# Playwright
+node_modules/
+e2e/test-results/
+e2e/playwright-report/
+e2e/blob-report/
+e2e/playwright/.cache/
+e2e/playwright/.auth/
 
 # Logs
 npm-debug.log*
