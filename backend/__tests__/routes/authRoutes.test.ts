@@ -2,6 +2,7 @@ import app from "../../src/app";
 import request from "supertest"
 import User from "../../src/models/UserModel";
 import bcrypt from "bcryptjs"
+import jwt from "jsonwebtoken"
 
 const user = (hashedPassword: string, status: "Active" | "InActive" = "Active") => ({
             username: "mk",
@@ -12,6 +13,10 @@ const user = (hashedPassword: string, status: "Active" | "InActive" = "Active") 
         })
 
 describe("auth routes", () => {
+    
+    beforeEach(async()=>{
+        await User.deleteMany({})
+    })
 
     it("will login user successfully", async () => {
 
@@ -117,4 +122,110 @@ describe("auth routes", () => {
 
     })
     
+    it("will refresh tokens successfully", async () => {
+
+        const hashedPassword = await bcrypt.hash("1234", 10)
+        
+        const createdUser = await User.create(user(hashedPassword))
+
+        const refreshToken = jwt.sign(
+            {
+                id: createdUser._id,
+                username: createdUser.username,
+            },
+            process.env.REFRESH_TOKEN as string,
+            {expiresIn: "7d"}
+        )
+
+        const response = await request(app).post("/api/auth/refresh").set("Cookie", [`refreshToken=${refreshToken}`])
+
+        expect(response.status).toBe(200)
+        expect(response.body).toEqual({message: "Token refreshed"})
+        expect(response.headers["set-cookie"]).toEqual(
+            expect.arrayContaining([
+                expect.stringContaining("accessToken")
+            ])
+        )
+    })
+
+    it("wont refresh tokens if no cookies", async () => {
+        const response = await request(app).post("/api/auth/refresh")
+
+        expect(response.status).toBe(401)
+        expect(response.body).toEqual({
+            message: "No refresh token"
+        })
+    })
+
+    it("wont refresh token if token is invalid", async()=>{
+
+        const response = await request(app)
+            .post("/api/auth/refresh")
+            .set("Cookie", [
+                "refreshToken=wrong-token"
+            ])
+
+        expect(response.status).toBe(403)
+        expect(response.body).toEqual({message: "Forbidden"})
+
+    })
+
+    it("wont refresh token if user is not found ", async () => {
+        const fakeId = "507f1f77bcf86cd799439011"
+
+        const refreshToken = jwt.sign(
+            {
+                id: fakeId,
+                username: "mk"
+            },
+            process.env.REFRESH_TOKEN as string,
+            {
+                expiresIn: "7d"
+            }
+        )
+
+        const response = await request(app)
+            .post("/api/auth/refresh")
+            .set("Cookie", [`refreshToken=${refreshToken}`])
+
+        expect(response.status).toBe(401)
+
+        expect(response.body).toEqual({
+            message: "No User Found"
+        })
+
+    })
+
+    it("will logout successfully", async () => {
+
+        const hashedPass = await bcrypt.hash("1234", 10)
+        const createdUser = await User.create(user(hashedPass))
+
+        const refreshToken = jwt.sign(
+            {
+                username: createdUser.username,
+                id: createdUser._id,
+            },
+            process.env.REFRESH_TOKEN as string,
+            {expiresIn: "7d"}
+        )
+
+
+        const response = await request(app).post("/api/auth/logout").set("Cookie", [`refreshToken=${refreshToken}`])
+
+        expect(response.status).toBe(200)
+        expect(response.body).toEqual({message: "Logged out successfully"})
+        expect(response.headers["set-cookie"]).toEqual(
+            expect.arrayContaining([
+                expect.stringContaining("refreshToken"),
+                expect.stringContaining("accessToken")
+            ])
+        )
+    })
+
+    it("will give status of 204 if no refreshToken when logging out", async () => {
+        const response = await request(app).post("/api/auth/logout")
+
+        expect(response.status).toBe(204)
+    })
 })
