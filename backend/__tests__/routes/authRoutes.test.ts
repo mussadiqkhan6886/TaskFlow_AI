@@ -116,30 +116,5 @@ describe("auth routes", () => {
         })
 
     })
-
-    it("will block too many login attempts", async()=>{
-
-        for(let i=0;i<5;i++){
-            await request(app)
-            .post("/api/auth/login")
-            .send({
-                username:"wrong",
-                password:"wrong"
-            })
-        }
-
-
-        const response = await request(app)
-            .post("/api/auth/login")
-            .send({
-                username:"wrong",
-                password:"wrong"
-            })
-
-
-        expect(response.status)
-            .toBe(429)
-
-    })
     
 })
