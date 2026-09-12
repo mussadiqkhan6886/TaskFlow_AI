@@ -10,7 +10,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "start:e2e": "cross-env NODE_ENV=e2e node dist/server.js"
+    "start:e2e": "cross-env NODE_ENV=test tsx src/server.ts"
   },
   "keywords": [
     "fullstack",

@@ -3,7 +3,12 @@ import connectDB from "./config/dbConnection"
 import mongoose from "mongoose"
 import { connectRedis } from "./config/connectRedis"
 import app from "./app"
-dotenv.config()
+
+if (process.env.NODE_ENV === "test") {
+    dotenv.config({ path: ".env.test", override: true });
+} else {
+    dotenv.config();
+}
 const PORT : number = Number(process.env.PORT) || 4000
 
 connectDB()
