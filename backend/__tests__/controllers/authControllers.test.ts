@@ -3,7 +3,12 @@ import User from "../../src/models/UserModel"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
-vi.mock("../models/UserModel")
+vi.mock("../../src/models/userModel",()=>({
+    default:{
+        findOne: vi.fn()
+    }
+}))
+
 vi.mock("bcryptjs")
 vi.mock("jsonwebtoken")
 
@@ -30,7 +35,7 @@ describe("auth controllers" , () => {
         await login(req, res)
 
         expect(res.status).toHaveBeenCalledWith(400)
-        expect(res.json).toHaveBeenCalledWith({message: "No username found with this username or he is inactive"})
+        expect(res.json).toHaveBeenCalledWith({message: "Please Enter both username and password"})
     })
 
     it("shall return status of 404 when user is not found", async () => {
@@ -95,7 +100,7 @@ describe("auth controllers" , () => {
         vi.mocked(bcrypt.compare).mockResolvedValue(false as never)
 
         await login(req, res)
-        expect(bcrypt.compare).toHaveBeenCalledWith("123", "hashed")
+        expect(bcrypt.compare).toHaveBeenCalledWith("mk123", "hashed")
         expect(res.status).toHaveBeenCalledWith(401); expect(res.json).toHaveBeenCalledWith({ message: "Wrong Password" });
     })
 
@@ -107,13 +112,13 @@ describe("auth controllers" , () => {
 
         vi.mocked(User.findOne).mockReturnValue({
             lean: () => ({
-                exec: {
+                exec: vi.fn().mockResolvedValue({
                     username: "mk",
                     email: "mk123",
                     password: "hashed",
                     role: "Admin",
                     status: "Active"
-                }
+                })
             })
         } as any)
 

@@ -460,7 +460,7 @@ describe("note controller", () => {
         expect(deleteNoteCache).not.toHaveBeenCalled()
 
         expect(res.status).toHaveBeenCalledWith(404)
-        expect(res.json).toHaveBeenCalledWith({success:true, message: "not note found with this id"})
+        expect(res.json).toHaveBeenCalledWith({success:false, message: "not note found with this id"})
     })
     it("will not delete note if id is not given and send status of 400", async () => {
         req = {
@@ -479,6 +479,6 @@ describe("note controller", () => {
         expect(deleteNoteCache).not.toHaveBeenCalled()
 
         expect(res.status).toHaveBeenCalledWith(400)
-        expect(res.json).toHaveBeenCalledWith({success:true, message: "Id is required"})
+        expect(res.json).toHaveBeenCalledWith({success:false, message: "Id is required"})
     })
 })

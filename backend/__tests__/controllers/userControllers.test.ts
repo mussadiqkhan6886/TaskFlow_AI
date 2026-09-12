@@ -26,7 +26,7 @@ vi.mock("../../src/config/connectRedis", () => ({
         del: vi.fn()
     }
 }))
-vi.mock("bcrypt", () => ({
+vi.mock("bcryptjs", () => ({
     default: {
         hash: vi.fn(),
         compare: vi.fn()
@@ -142,7 +142,7 @@ describe("user controller", () => {
         expect(redis.get).not.toHaveBeenCalled();
 
         expect(res.status).toHaveBeenCalledWith(400)
-        expect(res.json).toHaveBeenCalledWith({success:false, message:"id is required"})
+        expect(res.json).toHaveBeenCalledWith({success:false, message:"Id is required"})
     })
 
     it("will not get single note if user not found and send status of 404", async () => {
@@ -160,7 +160,9 @@ describe("user controller", () => {
         const selectMock = vi.fn().mockReturnValue({
             lean:leanMock
         })
-        vi.mocked(User.findById).mockResolvedValue(selectMock)
+        vi.mocked(User.findById).mockReturnValue({
+            select:selectMock
+        } as any)
 
         await getSingleUser(req, res)
 
@@ -255,7 +257,7 @@ describe("user controller", () => {
         expect(User.create).not.toHaveBeenCalled()
         expect(deleteUserCache).not.toHaveBeenCalled()
         expect(res.status).toHaveBeenCalledWith(400)
-        expect(res.json).toHaveBeenCalledWith({success: true, message: "Zod error, please enter correct field data", errors: {issues:[]}})
+        expect(res.json).toHaveBeenCalledWith({success: false, message: "Zod error, please enter correct field data", errors: {issues:[]}})
     })
 
     it("should return 409 when username or email already exists while creating new user", async () => {
@@ -316,7 +318,9 @@ describe("user controller", () => {
         vi.mocked(User.findByIdAndUpdate).mockResolvedValue({
             _id: "123",
             username: "mussadiq",
-            status: "InActive"
+            status: "InActive",
+            email: "mussadiq@gmail.com",
+            role: "Admin",
         })
         
         await updateUser(req, res)
@@ -385,7 +389,7 @@ describe("user controller", () => {
         await updateUser(req, res)
 
         expect(User.findByIdAndUpdate).toHaveBeenCalledWith(
-            { _id: "123" },
+            "123" ,
             {
                 status: "InActive"
             },
@@ -494,7 +498,7 @@ describe("user controller", () => {
         vi.mocked(User.findByIdAndDelete).mockResolvedValue(null)
         await deleteUser(req, res)
 
-        expect(User.findByIdAndDelete).toHaveBeenCalledWith({ _id: "123" })
+        expect(User.findByIdAndDelete).toHaveBeenCalledWith( "123" )
         expect(deleteUserCache).not.toHaveBeenCalled()
         expect(redis.del).not.toHaveBeenCalledWith("user?id=123")
         expect(res.status).toHaveBeenCalledWith(404)
@@ -512,7 +516,7 @@ describe("user controller", () => {
         expect(deleteUserCache).not.toHaveBeenCalled()
 
         expect(res.status).toHaveBeenCalledWith(400)
-        expect(res.json).toHaveBeenCalledWith({success:true, message: "No id was passed in params"})
+        expect(res.json).toHaveBeenCalledWith({success:false, message: "No id was passed in params"})
     })
 
     it("will not delete if user have notes", async () => {

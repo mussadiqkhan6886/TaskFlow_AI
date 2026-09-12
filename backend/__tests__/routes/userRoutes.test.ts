@@ -7,7 +7,7 @@ import app from "../../src/app"
 const createAccessToken = async (role: "Admin" | "Manager" | "Employee") => {
     const hashedPass = await bcrypt.hash("1234", 10)
     const createdUser = await User.create({
-        username: "mk",
+        username: "immk",
         email: "mk@gmail.com",
         password: hashedPass,
         role
@@ -42,6 +42,13 @@ describe("user routes", () => {
 
     it("will get users successfully", async () => {
         const {accessToken} = await createAccessToken("Admin")
+        const hashedPass = await bcrypt.hash("1234", 10)
+        await User.create({
+            username: "immk",
+            password: hashedPass,
+            role: "Employee",
+            email: "immk@gmail.com"
+        })
         const response = await request(app).get("/api/users").set("Cookie", [`accessToken=${accessToken}`])
         
         expect(response.status).toBe(200)
@@ -63,6 +70,13 @@ describe("user routes", () => {
 
     it("will get users ids successfully", async () => {
         const {accessToken} = await createAccessToken("Manager")
+        const hashedPass = await bcrypt.hash("1234", 10)
+        await User.create({
+            username: "immk",
+            password: hashedPass,
+            role: "Employee",
+            email: "immk@gmail.com"
+        })
         const response = await request(app).get("/api/users/ids").set("Cookie", [`accessToken=${accessToken}`])
         
         expect(response.status).toBe(200)
@@ -91,9 +105,16 @@ describe("user routes", () => {
         
     })
 
-    it("will get not single user and return 400", async () => {
+    it("will not get single user and return 400", async () => {
         const {accessToken} = await createAccessToken("Admin")
        
+        const hashedPass = await bcrypt.hash("1234", 10)
+        await User.create({
+            username: "immk",
+            password: hashedPass,
+            role: "Employee",
+            email: "immk@gmail.com"
+        })
         const response = await request(app).get("/api/users/undefined").set("Cookie", [`accessToken=${accessToken}`])
 
         expect(response.status).toBe(400)
@@ -104,7 +125,7 @@ describe("user routes", () => {
     it("will create new user successfully", async () => {
         const {accessToken} = await createAccessToken("Admin")
         const response = await request(app).post("/api/users").set("Cookie", [`accessToken=${accessToken}`]).send({
-            username: "mk",
+            username: "immk",
             email: "mk@gmail.com",
             password: "1234",
             role: "Employee"
@@ -128,7 +149,7 @@ describe("user routes", () => {
     it("will not create new user if data is not sent", async () => {
         const {accessToken} = await createAccessToken("Admin")
 
-        const response = await request(app).post("/api/users").set("Cookie", [`accessToken=${accessToken}`])
+        const response = await request(app).post("/api/users").set("Cookie", [`accessToken=${accessToken}`]).send({})
 
         expect(response.status).toBe(400)
     })
@@ -137,7 +158,7 @@ describe("user routes", () => {
         const {accessToken} = await createAccessToken("Admin")
         const hashedPass = await bcrypt.hash("12345", 10)
         const createdUser = await User.create({
-            username: "mk",
+            username: "immk",
             email: "mk@gmail.com",
             password: hashedPass,
             role: "Employee"
@@ -153,7 +174,7 @@ describe("user routes", () => {
         const {accessToken} = await createAccessToken("Employee")
         const hashedPass = await bcrypt.hash("12345", 10)
         const createdUser = await User.create({
-            username: "mk",
+            username: "immk",
             email: "mk@gmail.com",
             password: hashedPass,
             role: "Employee"
@@ -179,7 +200,7 @@ describe("user routes", () => {
         const {accessToken} = await createAccessToken("Admin")
         const hashedPass = await bcrypt.hash("1234", 10)
         const createdUser = await User.create({
-            username: "mk",
+            username: "immk",
             email: "mk@gmail.com",
             password: hashedPass,
             role: "Employee"
@@ -200,7 +221,7 @@ describe("user routes", () => {
         const {accessToken} = await createAccessToken(body as "Employee" | "Manager")
         const hashedPass = await bcrypt.hash("1234", 10)
         const createdUser = await User.create({
-            username: "mk",
+            username: "immk",
             email: "mk@gmail.com",
             password: hashedPass,
             role: "Employee"

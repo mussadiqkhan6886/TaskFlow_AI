@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
 const user = (hashedPassword: string, status: "Active" | "InActive" = "Active") => ({
-            username: "mk",
+            username: "immk",
             role: "Admin" as const,
             password: hashedPassword,
             status,

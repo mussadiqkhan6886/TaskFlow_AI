@@ -8,7 +8,7 @@ import Note from "../../src/models/NoteModel"
 const createAccessToken = async (role: "Admin" | "Manager" | "Employee") => {
     const hashedPass = await bcrypt.hash("1234", 10)
     const createdUser = await User.create({
-        username: "mk",
+        username: "immk",
         email: "mk@gmail.com",
         password: hashedPass,
         role
