@@ -3,13 +3,6 @@ import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload, VerifyErrors } from "jsonwebtoken";
 
 export const verifyJWT = (req: Request, res: Response, next: NextFunction): void => {
-    // const authHeader = req.headers.authorization;
-
-    // if (!authHeader || Array.isArray(authHeader) || !authHeader.startsWith('Bearer ')) {
-    //     res.status(401).json({ message: 'Unauthorized' });
-    //     return;
-    // }
-
     const token = req.cookies.accessToken;
     if (!token) {
         res.status(401).json({
@@ -17,8 +10,6 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction): void
         });
         return;
     }
-
-    // const token = authHeader.split(' ')[1];
 
     jwt.verify(
         token,
