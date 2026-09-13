@@ -6,7 +6,7 @@ test("users can login successfully", async ({page}) => {
 
     await page.fill(
         "#username",
-        "admin"
+        "changed username"
     )
 
     await page.fill(
@@ -49,7 +49,7 @@ test("user can logout successfully", async ({page}) => {
 
     await page.goto("/login");
 
-    await page.fill("#username", "admin");
+    await page.fill("#username", "changed username");
     await page.fill("#password", "1234");
 
     await page.click("button[type='submit']");

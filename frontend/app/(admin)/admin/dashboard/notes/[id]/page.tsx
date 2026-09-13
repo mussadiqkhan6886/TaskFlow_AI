@@ -1,5 +1,6 @@
 import UpdateNote from "@/components/UpdateNote";
 import { getNote } from "@/server/note";
+import { getMe } from "@/server/user";
 import React from "react";
 
 const Page = async ({
@@ -10,6 +11,7 @@ const Page = async ({
   const { id } = await params;
 
   const note = await getNote(id)
+   const me = await getMe()
 
   return (
     <main className="min-h-screen bg-gray-100 p-6">
@@ -28,7 +30,7 @@ const Page = async ({
 
         <div className="rounded-2xl bg-white p-8 shadow-lg">
 
-          <UpdateNote note={note} />
+          <UpdateNote note={note} role={me.role} />
 
         </div>
 

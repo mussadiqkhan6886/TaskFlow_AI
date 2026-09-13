@@ -44,6 +44,7 @@ const NotesPage = async ({searchParams}: {searchParams: Promise<{status?:string,
           {notes.length < 1 ? <h2 className="text-center font-semibold text-2xl">No Notes</h2> : notes.map((note: NoteType) => (
             <div
               key={note._id}
+              data-testid="note-card"
               className="rounded-2xl bg-white p-6 shadow-lg transition hover:-translate-y-1"
             >
 

@@ -28,6 +28,9 @@ export async function login(
 
 
     await page.waitForURL(
-        "/admin/dashboard"
+        "/admin/dashboard",
+        {
+            timeout:10000
+        }
     );
 }
