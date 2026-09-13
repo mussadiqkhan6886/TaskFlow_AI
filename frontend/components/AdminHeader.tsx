@@ -25,7 +25,7 @@ const AdminHeader = () => {
         <Link href="/admin/dashboard" className="uppercase font-semibold text-lg">Admin Dashboard</Link>
       </div>
       <div>
-        <button className="cursor-pointer" onClick={() => logoutMutation.mutate()}>
+        <button data-testid="logout" className="cursor-pointer" onClick={() => logoutMutation.mutate()}>
             <FiLogOut size={32} />
         </button>
       </div>
