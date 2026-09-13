@@ -30,9 +30,9 @@ const NotesPage = async ({searchParams}: {searchParams: Promise<{status?:string,
             </p>
           </div>
 
-          <Link href="add-note" className="rounded-lg bg-black px-5 py-3 font-medium text-white hover:bg-gray-800">
+          {me.role !== "Employee" && <Link href="add-note" className="rounded-lg bg-black px-5 py-3 font-medium text-white hover:bg-gray-800">
             + Add Note
-          </Link>
+          </Link>}
         </div>
 
 
