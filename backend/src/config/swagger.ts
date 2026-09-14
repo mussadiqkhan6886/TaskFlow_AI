@@ -89,6 +89,10 @@ const options: swaggerJsdoc.Options = {
                         "priority"
                     ],
                     properties: {
+                        id: {
+                            type: "string",
+                            example: "12345677"
+                        },
                         noteFor: {
                             type: "string",
                             example: "1234567"
@@ -135,7 +139,45 @@ const options: swaggerJsdoc.Options = {
                         },
                     },
                 },
+                CreateNoteRequest: {
+                    type: "object",
 
+                    required: [
+                        "noteFor",
+                        "title",
+                        "description",
+                        "priority"
+                    ],
+
+                    properties: {
+
+                        noteFor: {
+                        type: "string",
+                        example: "65f123abc456"
+                        },
+
+                        title: {
+                        type: "string",
+                        example: "Fix login bug"
+                        },
+
+                        description: {
+                        type: "string",
+                        example: "Update refresh token logic"
+                        },
+
+                        priority: {
+                        type: "string",
+                        enum: [
+                            "High",
+                            "Medium",
+                            "Low"
+                        ],
+                        example: "High"
+                        }
+
+                    }
+                    }
             },
         },
     },
