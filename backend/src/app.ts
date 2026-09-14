@@ -6,6 +6,8 @@ import { errorHandler } from "./middleware/errorHandler"
 import authRouter from "./routes/authRoutes"
 import userRouter from "./routes/userRoutes"
 import noteRoute from "./routes/noteRoutes"
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger";
 
 const app : Express = express()
 
@@ -15,6 +17,11 @@ app.use(express.json())
 app.get("/health", (req, res) => {
     res.status(200).send("OK")
 })
+app.use(
+    "/api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec)
+);
 app.use("/api/auth",authRouter)
 app.use("/api/users", userRouter)
 app.use("/api/notes", noteRoute)
