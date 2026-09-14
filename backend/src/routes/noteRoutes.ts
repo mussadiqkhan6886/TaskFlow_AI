@@ -192,7 +192,7 @@ router.post("/", verifyRole(ROLES.ADMIN, ROLES.MANAGER), createNewNote)
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CreateNoteRequest'
+ *             $ref: '#/components/schemas/UpdateNoteRequest'
  *
  *     responses:
  *

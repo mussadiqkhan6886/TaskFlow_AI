@@ -94,6 +94,7 @@ export const createNewUser = async (req: Request, res: Response) : Promise<void>
     
 }
 
+
 export const updateUser = async (req: Request, res: Response) : Promise<void> => {
     const updatedData = req.body
     const {id} = req.params
@@ -153,6 +154,7 @@ export const updateUser = async (req: Request, res: Response) : Promise<void> =>
     }
 }
 
+
 export const deleteUser = async (req: Request, res: Response) : Promise<void> => {
     const {id} = req.params
 
@@ -179,6 +181,7 @@ export const deleteUser = async (req: Request, res: Response) : Promise<void> =>
     await redis.del(`user?id=${id}`)
     res.status(204).send()
 }
+
 
 export const getSingleUser = async (req: Request, res: Response) : Promise<void> => {
     const {id} = req.params

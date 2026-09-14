@@ -13,7 +13,7 @@ const options: swaggerJsdoc.Options = {
                 url: "http://localhost:4000",
             },
         ],
-         components: {
+        components: {
             securitySchemes: {
 
                 accessTokenCookie: {
@@ -34,154 +34,287 @@ const options: swaggerJsdoc.Options = {
             },
 
             schemas: {
-
-                User: {
+                 User: {
                     type: "object",
-                    required: [
-                        "username",
-                        "password",
-                        "email",
-                        "role"
-                    ],
                     properties: {
-                        id: {
-                            type: "string",
-                            example: "65f123abc456",
-                        },
-
-                        username: {
-                            type: "string",
-                            example: "admin",
-                        },
-
-                        email: {
-                            type:"string",
-                            example: "admin@gmail.com"
-                        },
-
-                        role: {
-                            type: "string",
-                            enum: [
-                                "Admin",
-                                "Manager",
-                                "Employee",
-                            ],
-                            example: "Manager",
-                        },
-
-                        status: {
-                            type: "string",
-                            enum: [
-                                "Active",
-                                "InActive",
-                            ],
-                            example: "Active",
-                        },
+                    id: {
+                        type: "string",
+                        example: "65f123abc456",
+                    },
+                    username: {
+                        type: "string",
+                        example: "admin",
+                    },
+                    email: {
+                        type: "string",
+                        example: "admin@gmail.com",
+                    },
+                    role: {
+                        type: "string",
+                        enum: [
+                        "Admin",
+                        "Manager",
+                        "Employee",
+                        ],
+                        example: "Manager",
+                    },
+                    status: {
+                        type: "string",
+                        enum: [
+                        "Active",
+                        "InActive",
+                        ],
+                        example: "Active",
+                    },
                     },
                 },
+
+                CurrentUser: {
+                    type: "object",
+                    properties: {
+                    username: {
+                        type: "string",
+                        example: "admin",
+                    },
+                    role: {
+                        type: "string",
+                        example: "Admin",
+                    },
+                    },
+                },
+
+                CreateUserRequest: {
+                    type: "object",
+                    required: [
+                    "username",
+                    "email",
+                    "password",
+                    "role",
+                    ],
+                    properties: {
+                    username: {
+                        type: "string",
+                        example: "john",
+                    },
+                    email: {
+                        type: "string",
+                        example: "john@gmail.com",
+                    },
+                    password: {
+                        type: "string",
+                        example: "password123",
+                    },
+                    role: {
+                        type: "string",
+                        enum: [
+                        "Admin",
+                        "Manager",
+                        "Employee",
+                        ],
+                        example: "Employee",
+                    },
+                    },
+                },
+
+                UpdateUserRequest: {
+                    type: "object",
+                    properties: {
+                    username: {
+                        type: "string",
+                        example: "johnUpdated",
+                    },
+                    email: {
+                        type: "string",
+                        example: "newemail@gmail.com",
+                    },
+                    password: {
+                        type: "string",
+                        example: "newpassword123",
+                    },
+                    role: {
+                        type: "string",
+                        enum: [
+                        "Admin",
+                        "Manager",
+                        "Employee",
+                        ],
+                        example: "Manager",
+                    },
+                    status: {
+                        type: "string",
+                        enum: [
+                        "Active",
+                        "InActive",
+                        ],
+                        example: "Active",
+                    },
+                    },
+                },
+
+                UserIds: {
+                    type: "object",
+                    properties: {
+                    id: {
+                        type: "string",
+                        example: "65f123abc456",
+                    },
+                    username: {
+                        type: "string",
+                        example: "john",
+                    },
+                    },
+                },
+
 
                 Note: {
                     type: "object",
-                    required: [
-                        "noteFor",
-                        "title",
-                        "description",
-                        "priority"
-                    ],
                     properties: {
-                        id: {
-                            type: "string",
-                            example: "12345677"
-                        },
-                        noteFor: {
-                            type: "string",
-                            example: "1234567"
-                        },
-                        title: {
-                            type: "string",
-                            example: "crud"
-                        },
-                        description: {
-                            type: "string",
-                            example: "complete crud"
-                        },
-                        priority:{
-                            type: "string",
-                            enum: ["High", "Medium", "Low"],
-                            example: "High"
-                        },
-                        status: {
-                            type: "string",
-                            enum: ["Completed", "Pending", "Working"],
-                            example: "Pending"
-                        }
-                    }
+
+                    id: {
+                        type: "string",
+                        example: "65f123abc456",
+                    },
+
+                    noteFor: {
+                        type: "string",
+                        example: "65f123abc456",
+                    },
+
+                    title: {
+                        type: "string",
+                        example: "Fix login bug",
+                    },
+
+                    description: {
+                        type: "string",
+                        example: "Update refresh token logic",
+                    },
+
+                    priority: {
+                        type: "string",
+                        enum: [
+                        "High",
+                        "Medium",
+                        "Low",
+                        ],
+                        example: "High",
+                    },
+
+                    status: {
+                        type: "string",
+                        enum: [
+                        "Completed",
+                        "Pending",
+                        "Working",
+                        ],
+                        example: "Pending",
+                    },
+                    },
                 },
+
+
+                CreateNoteRequest: {
+                    type: "object",
+                    required: [
+                    "noteFor",
+                    "title",
+                    "description",
+                    "priority",
+                    ],
+
+                    properties: {
+
+                    noteFor: {
+                        type: "string",
+                        example: "65f123abc456",
+                    },
+
+                    title: {
+                        type: "string",
+                        example: "Fix login bug",
+                    },
+
+                    description: {
+                        type: "string",
+                        example: "Update refresh token logic",
+                    },
+
+                    priority: {
+                        type: "string",
+                        enum: [
+                        "High",
+                        "Medium",
+                        "Low",
+                        ],
+                        example: "High",
+                    },
+
+                    },
+                },
+
+
+                UpdateNoteRequest: {
+                    type: "object",
+                    properties: {
+
+                    title: {
+                        type: "string",
+                        example: "Updated title",
+                    },
+
+                    description: {
+                        type: "string",
+                        example: "Updated description",
+                    },
+
+                    priority: {
+                        type: "string",
+                        enum: [
+                        "High",
+                        "Medium",
+                        "Low",
+                        ],
+                        example: "Medium",
+                    },
+
+                    status: {
+                        type: "string",
+                        enum: [
+                        "Completed",
+                        "Pending",
+                        "Working",
+                        ],
+                        example: "Completed",
+                    },
+
+                    },
+                },
+
 
                 LoginRequest: {
                     type: "object",
-                    required:
-                    [
-                        "username",
-                        "password",
-                    ],
-
-                    properties: {
-
-                        username: {
-                            type: "string",
-                            example: "admin",
-                        },
-
-                        password: {
-                            type: "string",
-                            example: "password123",
-                        },
-                    },
-                },
-                CreateNoteRequest: {
-                    type: "object",
-
                     required: [
-                        "noteFor",
-                        "title",
-                        "description",
-                        "priority"
+                    "username",
+                    "password",
                     ],
-
                     properties: {
 
-                        noteFor: {
+                    username: {
                         type: "string",
-                        example: "65f123abc456"
-                        },
+                        example: "admin",
+                    },
 
-                        title: {
+                    password: {
                         type: "string",
-                        example: "Fix login bug"
-                        },
+                        example: "password123",
+                    },
 
-                        description: {
-                        type: "string",
-                        example: "Update refresh token logic"
-                        },
-
-                        priority: {
-                        type: "string",
-                        enum: [
-                            "High",
-                            "Medium",
-                            "Low"
-                        ],
-                        example: "High"
-                        }
-
-                    }
-                    }
-            },
-        },
+                    },
+            
+                },
+            }
+        }
     },
-
     apis: [
         "./src/routes/*.ts",
         "./src/controllers/*.ts",
