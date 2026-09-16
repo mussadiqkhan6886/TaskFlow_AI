@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const aiNoteSchema = z.object({
+export const aiSchema = z.object({
     noteId:z.string(),
     action:z.enum([
         "summary",
