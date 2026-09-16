@@ -8,6 +8,7 @@ import userRouter from "./routes/userRoutes"
 import noteRoute from "./routes/noteRoutes"
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger";
+import aiRoute from "./routes/aiRoutes"
 
 const app : Express = express()
 
@@ -25,6 +26,7 @@ app.use(
 app.use("/api/auth",authRouter)
 app.use("/api/users", userRouter)
 app.use("/api/notes", noteRoute)
+app.use("/api/ai", aiRoute)
 
 app.use(errorHandler)
 export default app

@@ -20,6 +20,7 @@
   "author": "mussadiq khan",
   "license": "ISC",
   "dependencies": {
+    "@google/genai": "^2.22.0",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.10.1",
     "cookie-parser": "^1.4.7",
