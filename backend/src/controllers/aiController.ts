@@ -20,10 +20,10 @@ export const aiGenerate = async (req: Request, res: Response) : Promise<void> =>
         return
     }
 
-    // if(!((findNote.noteFor !== req.user?.id) && req.user?.role === "Employee")){
-    //     res.send(401).json({message:"Forbidden", success: false})
-    //     return
-    // }
+    if(findNote.noteFor.toString() !== req.user?.id && req.user?.role === "Employee"){
+        res.send(401).json({message:"Forbidden", success: false})
+        return
+    }
 
     const response = await generate({action, content: findNote.description})
 
