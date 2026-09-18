@@ -6,6 +6,8 @@ import { formatDate } from "@/lib/helpers/formatDate";
 import { getAllNotes } from "@/server/note";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 const NotesPage = async ({searchParams}: {searchParams: Promise<{status?:string, priority?:string}>}) => {
   
   const {status = "", priority=""} = await searchParams

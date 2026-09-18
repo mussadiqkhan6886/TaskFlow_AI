@@ -5,6 +5,8 @@ import { getAllUsers } from "@/server/user";
 import Link from "next/link";
 import React from "react";
 
+export const dynamic = "force-dynamic";
+
 const UsersPage = async ({searchParams}: {searchParams: Promise<{search?: string, status?: string}>}) => {
   const me = await requiredRole(["Manager", "Admin"])
   
