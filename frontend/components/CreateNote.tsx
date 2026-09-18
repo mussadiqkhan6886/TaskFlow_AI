@@ -5,6 +5,7 @@ import { getUsersId } from '@/server/user';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import React, { ChangeEvent, FormEvent, useState } from 'react';
+import { HiLightningBolt } from 'react-icons/hi';
 
 const CreateNote = () => {
   const router = useRouter();
@@ -120,6 +121,13 @@ const CreateNote = () => {
           className="mb-2 block text-sm font-medium text-gray-700"
         >
           Priority
+          <button
+            className="my-1 cursor-pointer relative flex items-center gap-2 overflow-hidden rounded-lg bg-[linear-gradient(90deg,#f59e0b,#ef4444,#f97316,#f59e0b)] bg-[length:300%_100%] px-4 py-2 text-white transition-all duration-300 hover:scale-105 hover:animate-[gradient_2s_linear_infinite] hover:shadow-[0_0_35px_rgba(245,158,11,.5)] active:scale-95">
+            <HiLightningBolt
+              size={18}
+            />
+            Generate 
+          </button>
         </label>
 
         <select
@@ -133,6 +141,7 @@ const CreateNote = () => {
           <option value="Medium">Medium</option>
           <option value="High">High</option>
         </select>
+        
       </div>
 
       <div className="flex justify-end gap-4 pt-4">
