@@ -1,6 +1,6 @@
 'use client';
 
-import { PropsAI, summarizeNote } from '@/server/ai';
+import { PropsAI, generateAi } from '@/server/ai';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { FiX } from 'react-icons/fi';
@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 
 const SummarizeButton = ({action, noteId, description}: PropsAI) => {
     const data = useMutation({
-        mutationFn: () => summarizeNote({action, noteId, description}),
+        mutationFn: () => generateAi({action, noteId, description}),
         onError: (error) => {
             toast.error(error.message, {
                 id: "ai"
