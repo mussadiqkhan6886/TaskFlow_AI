@@ -1,2 +1,8 @@
 @import "tailwindcss";
 
+
+@keyframes gradient {
+  to {
+    background-position: 300% 0;
+  }
+}

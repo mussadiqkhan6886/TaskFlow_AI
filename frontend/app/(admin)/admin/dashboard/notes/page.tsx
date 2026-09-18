@@ -1,10 +1,10 @@
 import DeleteNote from "@/components/DeleteNote";
 import NoteQuery from "@/components/NoteQuery";
+import SummarizeButton from "@/components/SummarizeButton";
 import { requiredRole } from "@/lib/helpers/authPage";
 import { formatDate } from "@/lib/helpers/formatDate";
 import { getAllNotes } from "@/server/note";
 import Link from "next/link";
-import React from "react";
 
 const NotesPage = async ({searchParams}: {searchParams: Promise<{status?:string, priority?:string}>}) => {
   
@@ -45,7 +45,7 @@ const NotesPage = async ({searchParams}: {searchParams: Promise<{status?:string,
             <div
               key={note._id}
               data-testid="note-card"
-              className="rounded-2xl bg-white p-6 shadow-lg transition hover:-translate-y-1"
+              className="rounded-2xl bg-white p-6 shadow-lg"
             >
 
               <div className="mb-4 flex items-start justify-between">
@@ -102,6 +102,7 @@ const NotesPage = async ({searchParams}: {searchParams: Promise<{status?:string,
                   Edit
                 </Link>
                 {me.role !== "Employee" && <DeleteNote id={note._id} />}
+                <SummarizeButton noteId={note._id} action="summary" description="" />
               </div>
 
             </div>

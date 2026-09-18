@@ -15,6 +15,12 @@ export const fetchHelper = async <T>(path: string, options: RequestInit = {}): P
     }
 
     const result = await res.json()
-    if (!res.ok) throw new Error(result.message)
+   if (!res.ok) {
+        throw new Error(
+            result.message ||
+            result.error?.message ||
+            "Something went wrong"
+        )
+    }
     return result
 }

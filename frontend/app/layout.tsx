@@ -1,5 +1,6 @@
 import TanStackQueryProvider from "@/components/provider/TanStackQueryProvider";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -9,6 +10,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <TanStackQueryProvider>
+          <Toaster
+            position="top-right"
+            richColors
+          />
           {children}
         </TanStackQueryProvider>
         </body>

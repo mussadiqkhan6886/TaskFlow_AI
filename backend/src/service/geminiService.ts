@@ -16,14 +16,22 @@ export async function generate({action, content}: AIRequest) {
             break
         case 'priority':
             prompt = `
-                given description problem return its priority level in just Low, Medium and High :
+                Analyze this note.
+
+                Return ONLY one word:
+
+                High
+                Medium
+                Low
+
+                Note:
                 ${content}
             `
             break
     }
 
     const response = await gemini.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-3.6-flash",
         contents: prompt,
     });
 
