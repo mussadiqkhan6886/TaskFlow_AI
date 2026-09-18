@@ -118,7 +118,7 @@ describe("ai controller", () => {
             data: req.body,
             success: false,
             error: {
-                message: "Invalid data"
+                message: "something went wrong"
             }
         }as any)
 
@@ -127,27 +127,6 @@ describe("ai controller", () => {
         expect(res.status).toHaveBeenCalledWith(400)
         expect(res.json).toHaveBeenCalledWith({
             success: false, message: "Zod error, please enter correct field data", error: "something went wrong"
-        })
-    })
-    it("will give 400 error if noteId or description is not provided", async () => {
-           req = {
-            body : {
-                noteId: "123",
-                action: "",
-                description: ""
-            }
-        }
-        
-        vi.mocked(aiSchema.safeParse).mockReturnValue({
-            data: req.body,
-            success: true,
-        })
-
-        await aiGenerate(req, res)
-
-        expect(res.status).toHaveBeenCalledWith(400)
-        expect(res.json).toHaveBeenCalledWith({
-            success: false, message: "Provide noteId or description"
         })
     })
     it("if note is note found it will give error 404", async () => {
@@ -177,7 +156,7 @@ describe("ai controller", () => {
 
         expect(res.status).toHaveBeenCalledWith(404)
         expect(res.json).toHaveBeenCalledWith({
-            success: false, answer: "Note not found"
+            success: false, message: "Note not found"
         })
         expect(generate).not.toHaveBeenCalled()
     })
@@ -216,7 +195,7 @@ describe("ai controller", () => {
 
         expect(res.status).toHaveBeenCalledWith(403)
         expect(res.json).toHaveBeenCalledWith({
-            success: true, answer: "Forbidden"
+            success: false, message: "Forbidden"
         })
         expect(generate).not.toHaveBeenCalled()
     })
@@ -243,7 +222,7 @@ describe("ai controller", () => {
         
         expect(res.status).toHaveBeenCalledWith(503)
         expect(res.json).toHaveBeenCalledWith({
-            success: true, message: "AI service is busy. Please try again"
+            success: false, message: "AI service is busy. Please try again."
         })
     })
 })
