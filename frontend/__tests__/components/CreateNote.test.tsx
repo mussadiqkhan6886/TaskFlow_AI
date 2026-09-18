@@ -68,7 +68,10 @@ describe("create a note", () => {
 
         await user.type(screen.getByPlaceholderText("Write your note details..."), "this is description of testing")
 
-        await user.selectOptions(screen.getByLabelText("Priority"), "Low")
+        await user.selectOptions(
+            screen.getByRole("combobox", { name: /priority/i }),
+            "Low"
+        )
 
         await user.click(screen.getByRole("button", {name: /Create Note/i}))
 

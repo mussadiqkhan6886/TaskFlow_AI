@@ -6,7 +6,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import React, { ChangeEvent, FormEvent, useState } from 'react';
 
-const UpdateNote = ({ note, role }: { note: NoteType, role:string }) => {
+const UpdateNote = ({ note, role }: { note: NoteType, role?:string }) => {
 
   const {
     data: users,

@@ -1,7 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { getAllNotes } from "@/server/note";
 import { requiredRole } from "@/lib/helpers/authPage";
 import NotesPage from "@/app/(admin)/admin/dashboard/notes/page";
+import { renderWithQuery } from "@/lib/helpers/renderWithQuery";
 
 vi.mock("@/server/note", () => ({
   getAllNotes: vi.fn(),
@@ -69,7 +70,7 @@ describe("Notes Page", () => {
     });
 
 
-    render(ui);
+    renderWithQuery(ui);
 
 
     expect(
@@ -132,7 +133,7 @@ describe("Notes Page", () => {
     });
 
 
-    render(ui);
+    renderWithQuery(ui);
 
 
     expect(
@@ -176,7 +177,7 @@ describe("Notes Page", () => {
     });
 
 
-    render(ui);
+    renderWithQuery(ui);
 
 
 
