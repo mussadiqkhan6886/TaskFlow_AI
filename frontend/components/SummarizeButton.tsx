@@ -43,6 +43,7 @@ const SummarizeButton = ({action, noteId, description}: PropsAI) => {
         </div>
     </div>}
     <button
+        data-testid="summarize-button"
         onClick={() => data.mutate()}
         disabled={data.isPending}
         className="

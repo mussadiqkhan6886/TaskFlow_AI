@@ -74,14 +74,14 @@ test("manager can edit and create user", async ({page}) => {
         .click();
     
     await page.waitForURL(/\/admin\/dashboard\/users\/.+/);
-    
-    await page.fill("#username", "mkimmk")
+    const updatedName = `${username}-updated`
+    await page.fill("#username", updatedName)
     
     await page.getByRole("button", {name: /Save Changes/i}).click()
     
     await page.waitForURL("/admin/dashboard/users")
     
-    await expect(page.getByText("mkimmk")).toBeVisible()
+    await expect(page.getByText(updatedName)).toBeVisible()
     
     
 })

@@ -37,8 +37,9 @@ test("manager can create and edit notes", async ({page})=>{
 
     await page.getByText(/Add New Technote/i).click()
 
+    const title = `title${Date.now()}`
     await page.selectOption("#noteFor", "employee")
-    await page.fill("#title", "basit note")
+    await page.fill("#title", title)
     await page.fill("#description", "this is description")
     await page.selectOption("#priority", "Medium")
 
@@ -47,27 +48,27 @@ test("manager can create and edit notes", async ({page})=>{
     await page.waitForURL("/admin/dashboard/notes")
 
     await expect(
-        page.getByRole("heading", { name: "basit note" }).first()
+        page.getByRole("heading", { name: title }).first()
     ).toBeVisible();
 
     const noteCard = page
         .getByTestId("note-card")
         .filter({
-            has: page.getByRole("heading", { name: "basit note" }),
+            has: page.getByRole("heading", { name: title }),
         });
 
         await noteCard.getByRole("link", { name: "Edit" }).click();
 
     await page.waitForURL(/\/admin\/dashboard\/notes\/.+/);
     
-    
-    await page.fill("#title", "mussadiq note")
+    const updatedTitle = `${title}-updated`;
+    await page.fill("#title", updatedTitle)
     
     await page.getByRole("button", {name: /Save Note/i}).click()
     
     await page.waitForURL("/admin/dashboard/notes")
     
-    await expect(page.getByText("mussadiq note")).toBeVisible()
+    await expect(page.getByText(updatedTitle)).toBeVisible()
 
 });
 
@@ -128,3 +129,20 @@ test("admin has full note permissions", async ({page})=>{
     await expect(noteCard).not.toBeVisible();
 
 });
+
+test("users can summarize notes", async ({page}) => {
+    await login(page, "changed username", "1234")
+    await page.goto("/admin/dashboard")
+
+     await page.getByText(/View Technote/i).click()
+   await page.getByTestId("summarize-button").first().click()
+     await expect(
+        page.getByText(/Ai is thinking.../i)
+    ).toBeVisible()
+    await expect(
+        page.getByText(/summary generated/i)
+    ).toBeVisible({
+        timeout: 30000
+    });
+
+})
