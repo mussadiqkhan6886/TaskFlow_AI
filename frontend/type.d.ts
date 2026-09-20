@@ -43,3 +43,14 @@ interface UsersIdType{
     _id: string
     username: string
 }
+interface Message {
+    _id:string;
+    message:string;
+    room:string;
+    senderId:string;
+    sender:{
+        username:string;
+        role:string;
+    };
+
+};
