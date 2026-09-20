@@ -6,4 +6,6 @@ export const messageSchema = z.object({
         "user-room",
         "staff-room",
     ]),
+    senderId: z.string(),
+    readBy: z.array(z.string())
 })

@@ -12,6 +12,7 @@ export const chatHandler = (io: Server, socket: Socket) => {
             );
             return
         }
+        console.log(socket.user)
         const message = {
             message: data.message,
             room: data.room,
