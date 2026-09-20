@@ -9,7 +9,7 @@ import noteRoute from "./routes/noteRoutes"
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger";
 import aiRoute from "./routes/aiRoutes"
-import messageRouter ./routes/messageRouteseRoutes"
+import messageRouter from "./routes/messageRoutes"
 
 const app : Express = express()
 
