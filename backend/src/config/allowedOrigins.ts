@@ -1,4 +1,4 @@
 export const allowedOrigins = [
-    "http://localhost:3000",
-    "http://localhost:4000"
+    process.env.FRONTEND_URL,
+    process.env.BACKEND_URL
 ]
