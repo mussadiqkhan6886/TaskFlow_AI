@@ -12,6 +12,6 @@
     "skipLibCheck": true,
     "types": ["vitest/globals"]                             /* Skip type checking all .d.ts files. */
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "express.d.ts", "**/*.ts", "tsconfig.test.json", "vitest.config.mjs"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "express.d.ts", "**/*.ts", "tsconfig.test.json", "vitest.config.mjs", "socket.d.ts"],
   "exclude": ["node_modules"]
 }

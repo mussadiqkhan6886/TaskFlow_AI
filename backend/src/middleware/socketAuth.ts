@@ -1,6 +1,6 @@
+/// <reference path="../types/socket.d.ts" />
 import type { Socket } from "socket.io";
 import jwt, { JwtPayload } from "jsonwebtoken";
-
 
 interface JwtUser extends JwtPayload {
     UserInfo:{

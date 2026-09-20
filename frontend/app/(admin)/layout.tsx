@@ -1,5 +1,5 @@
 import AdminHeader from "@/components/AdminHeader";
-import ChatWidget from "@/components/ChatWIdget";
+import ChatWidget from "@/components/ChatWidget";
 import SocketProvider from "@/components/provider/SocketProvider";
 import type { Metadata } from "next";
 

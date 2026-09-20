@@ -12,7 +12,7 @@ const ChatWidget = async () => {
         me.role === "Manager";
 
     return (
-        <section>
+        <section className="flex flex-row gap-10 items-end fixed bottom-0 right-10">
 
             <ChatUser />
 
