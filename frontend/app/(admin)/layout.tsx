@@ -1,4 +1,5 @@
 import AdminHeader from "@/components/AdminHeader";
+import ChatWidget from "@/components/ChatWIdget";
 import SocketProvider from "@/components/provider/SocketProvider";
 import type { Metadata } from "next";
 
@@ -13,6 +14,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <SocketProvider>
       <AdminHeader />
         {children}
+      <ChatWidget />
     </SocketProvider>
     </>
   );
