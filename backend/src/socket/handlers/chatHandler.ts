@@ -31,9 +31,9 @@ export const chatHandler = (io: Server, socket: Socket) => {
 
         const dataMessage = parsedData.data
 
-        await Message.create(dataMessage)
+        const savedMessage = await Message.create(dataMessage)
 
-        io.to(data.room).emit("new-message", dataMessage)
+        io.to(data.room).emit("new-message", {...savedMessage.toObject(), sender:socket.user})
 
     } )
 }
