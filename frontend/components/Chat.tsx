@@ -9,6 +9,8 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
     const [collapsed, setCollapsed] = useState(true)
     const [message, setMessage] = useState("")
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    const [unReadMsgCount, setUnReadMsgCount] = useState(0)
+
     const {data: messages = [], isLoading} = useQuery({
         queryKey: [`messages`, room],
         queryFn: () => getAllMessages(room),
@@ -35,6 +37,15 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                     data,
                 ]
             );
+            const senderId = typeof data.senderId === "string" ? data.senderId : data.senderId._id
+
+            const isMine = senderId === userId
+
+            if(!isMine && collapsed){
+                setUnReadMsgCount(prev => prev + 1)
+
+            }
+
         };
 
         socket.on("new-message", handleMessage);
@@ -42,7 +53,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
         return () => {
             socket.off("new-message", handleMessage);
         };
-    }, [room]);
+    }, [room, userId, collapsed, queryClient]);
 
     const submitMessage = (e: FormEvent) => {
         e.preventDefault()
@@ -57,11 +68,15 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
 
   return (
     <div className={`bg-zinc-100 relative shadow-2xl border border-zinc-200 rounded-t-lg w-[360px] ${collapsed ? "h-[60px]" : "h-[450px]"} flex flex-col`}>
-            <div className="border-b border-zinc-800 p-3 flex flex-row items-center justify-between bg-zinc-200">
+            <div className="border-b border-zinc-800 p-3 flex flex-row relative items-center justify-between bg-zinc-200">
                 <div className=" rounded-full bg-blue-300 border aspect-square border-blue-400">
                     <p className="font-semibold text-[16px] px-3 py-1">{name}</p>
                 </div>
-                {collapsed ? <FiChevronUp onClick={() => setCollapsed(false)} className="font-semibold cursor-pointer" size={22} />  : <FiX onClick={() => setCollapsed(true)} className="font-semibold cursor-pointer" size={22} />}    
+                {unReadMsgCount >= 0 && <div className="absolute -top-3 -right-3 min-w-5 h-5 px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">{unReadMsgCount > 99 ? "99+" : unReadMsgCount}</div>}
+                {collapsed ? <FiChevronUp onClick={() => {
+                    setCollapsed(false)
+                    setUnReadMsgCount(0)
+                }} className="font-semibold cursor-pointer" size={22} />  : <FiX onClick={() => setCollapsed(true)} className="font-semibold cursor-pointer" size={22} />}    
             </div>
             
             {isLoading ? 
