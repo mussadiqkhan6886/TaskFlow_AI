@@ -9,7 +9,6 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
     const [collapsed, setCollapsed] = useState(true)
     const [message, setMessage] = useState("")
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
-    const [unReadMsgCount, setUnReadMsgCount] = useState(0)
 
     const {data: messages = [], isLoading} = useQuery({
         queryKey: [`messages`, room],
@@ -27,6 +26,21 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
         }
     }, [messages, collapsed]);
 
+    const unReadMsgCount = 
+        messages.reduce((count : number, m) : number => {
+            const senderId = typeof m.senderId === "string" ? m.senderId : m.senderId._id
+            if(senderId === userId){
+                return count
+            }
+
+            const alreadyRead = m.readBy.some(r => {
+                const readerId = typeof r.readerId === "string" ? r.readerId : r.readerId._id
+                return readerId === userId
+            })
+
+            return alreadyRead ? count : count + 1
+        }, 0)
+
     useEffect(() => {
         const handleMessage = (data: Message) => {
             if (data.room !== room) return;
@@ -37,14 +51,6 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                     data,
                 ]
             );
-            const senderId = typeof data.senderId === "string" ? data.senderId : data.senderId._id
-
-            const isMine = senderId === userId
-
-            if(!isMine && collapsed){
-                setUnReadMsgCount(prev => prev + 1)
-
-            }
 
         };
 
@@ -53,7 +59,47 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
         return () => {
             socket.off("new-message", handleMessage);
         };
-    }, [room, userId, collapsed, queryClient]);
+    }, [room, queryClient]);
+
+    useEffect(() => {
+        const handleMessageRead = (data: {userId: string, room: "staff-room" | "user-room", readAt: string, messageIds: string[]}) => {
+
+            if(data.room !== room) return
+
+            queryClient.setQueryData<Message[]>(
+                ["messages", room],
+                (oldMessages = []) =>  oldMessages.map(message => {
+                        if(!data.messageIds.includes(message._id)){
+                            return message
+                        }
+
+                        return {
+                            ...message,
+                            readBy: [
+                                ...message.readBy,
+                                {
+                                    readerId: data.userId,
+                                    readAt: data.readAt
+                                }
+                            ]
+                        }
+                    })
+            )
+        }
+
+        socket.on("messages-read", handleMessageRead)
+
+        return () => {socket.off("messages-read", handleMessageRead)}
+    }, [room, queryClient])
+
+    useEffect(() => {
+        if (!collapsed) {
+            socket.emit("mark-messages-read", {
+                room,
+            });
+
+        }
+    }, [room, collapsed]);
 
     const submitMessage = (e: FormEvent) => {
         e.preventDefault()
@@ -72,10 +118,9 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                 <div className=" rounded-full bg-blue-300 border aspect-square border-blue-400">
                     <p className="font-semibold text-[16px] px-3 py-1">{name}</p>
                 </div>
-                {unReadMsgCount >= 0 && <div className="absolute -top-3 -right-3 min-w-5 h-5 px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">{unReadMsgCount > 99 ? "99+" : unReadMsgCount}</div>}
+                {unReadMsgCount > 0 && <div className="absolute -top-3 -right-3 min-w-5 h-5 px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">{unReadMsgCount > 99 ? "99+" : unReadMsgCount}</div>}
                 {collapsed ? <FiChevronUp onClick={() => {
                     setCollapsed(false)
-                    setUnReadMsgCount(0)
                 }} className="font-semibold cursor-pointer" size={22} />  : <FiX onClick={() => setCollapsed(true)} className="font-semibold cursor-pointer" size={22} />}    
             </div>
             

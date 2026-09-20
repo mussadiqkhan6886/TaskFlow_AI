@@ -46,17 +46,30 @@ interface UsersIdType{
 type Message = {
     _id: string;
     message: string;
-    room: "staff-room" | "user-room";
+    room: "user-room" | "staff-room";
+
     senderId:
         | string
         | {
-              _id: string;
-              username: string;
-              role: string;
-          };
+            _id: string;
+            username: string;
+            role: string;
+        };
+
     sender?: {
         id: string;
         username: string;
         role: string;
     };
+
+    readBy: {
+        readerId:
+            | string
+            | {
+                _id: string;
+                username: string;
+                role: string;
+            };
+        readAt: string;
+    }[];
 };

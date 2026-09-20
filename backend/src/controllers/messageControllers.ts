@@ -18,7 +18,7 @@ export const getAllMessages = async (req: Request<MessageParams>, res: Response)
         return
     }
 
-    const msgs = await Message.find({room}).populate("senderId", "username role").sort({createdAt: 1})
+    const msgs = await Message.find({room}).populate("senderId", "username role").populate("readBy.readerId", "username role").sort({createdAt: 1})
 
 
     res.status(200).json({success: true, msgs})

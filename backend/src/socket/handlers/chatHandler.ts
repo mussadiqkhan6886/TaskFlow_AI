@@ -12,7 +12,6 @@ export const chatHandler = (io: Server, socket: Socket) => {
             );
             return
         }
-        console.log(socket.user)
         const message = {
             message: data.message,
             room: data.room,
@@ -37,4 +36,46 @@ export const chatHandler = (io: Server, socket: Socket) => {
         io.to(data.room).emit("new-message", {...savedMessage.toObject(), sender:socket.user})
 
     } )
+
+    socket.on("mark-messages-read", async ({room}) => {
+        try{
+            if(room === "staff-room" && socket.user.role == "Employee"){
+                return 
+            }
+            const userId = socket.user.id;
+            const readAt = new Date();
+
+            const unreadMsgs = await Message.find({
+                room, senderId :{ $ne: userId}, "readBy.readerId": {$ne: userId}
+            }).select("_id")
+
+            if(unreadMsgs.length === 0){
+                return 
+            }
+            const messageIds = unreadMsgs.map(
+                (message) => message._id
+            );
+            
+            await Message.updateMany(
+                {_id: {$in: messageIds}},
+                {
+                    $push: {
+                        readBy: {
+                            readerId: userId,
+                            readAt
+                        }
+                    }
+                }
+            )
+
+            io.to(room).emit("messages-read", {
+                room,
+                userId,
+                readAt,
+                messageIds,
+            });
+        }catch(error){
+            console.error("Mark messages read error:", error);
+        }
+    })
 }

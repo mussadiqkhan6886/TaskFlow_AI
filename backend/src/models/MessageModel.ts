@@ -16,8 +16,21 @@ const messageModel = new mongoose.Schema({
         enum: ["user-room", "staff-room"]
     },
     readBy: {
-        type: [String],
-        required: true
+        type: [
+            {
+                _id: false,
+                readerId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                    required:true
+                },
+                readAt: {
+                    type: Date,
+                    required: true
+                }
+            }
+        ],
+        default: []
     }
 },
     {timestamps: true}
