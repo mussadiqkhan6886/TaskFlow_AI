@@ -14,8 +14,6 @@ if (process.env.NODE_ENV === "test") {
 }
 const PORT : number = Number(process.env.PORT) || 4000
 
-connectDB()
-connectRedis()
 const httpServer  = createServer(app)
 const io = new Server(httpServer, {
     cors: {
@@ -23,6 +21,8 @@ const io = new Server(httpServer, {
         credentials: true
     }
 });
+connectDB()
+connectRedis()
 socketConfig(io)
 mongoose.connection.once("open", () => {
     console.log("MongoDB connected");
