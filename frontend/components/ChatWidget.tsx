@@ -14,10 +14,10 @@ const ChatWidget = async () => {
     return (
         <section className="flex flex-row gap-10 items-end fixed bottom-0 right-10">
 
-            <ChatUser />
+            <ChatUser userId={me._id} />
 
             {isStaff && (
-                <ChatStaff />
+                <ChatStaff userId={me._id} />
             )}
 
         </section>

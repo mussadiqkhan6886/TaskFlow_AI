@@ -1,7 +1,7 @@
 import Chat from "./Chat"
 
-const ChatUser = () => {
-    return <Chat name="E" room="user-room" />
+const ChatUser = ({userId}: {userId: string}) => {
+    return <Chat name="E" room="user-room" userId={userId} />
 }
 
 export default ChatUser
