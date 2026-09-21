@@ -68,7 +68,6 @@ type Message = {
             | {
                 _id: string;
                 username: string;
-                role: string;
             };
         readAt: string;
     }[];

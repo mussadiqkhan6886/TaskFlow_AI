@@ -73,6 +73,7 @@ export const chatHandler = (io: Server, socket: Socket) => {
                 userId,
                 readAt,
                 messageIds,
+                username: socket.user.username
             });
         }catch(error){
             console.error("Mark messages read error:", error);

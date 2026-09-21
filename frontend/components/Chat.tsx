@@ -83,7 +83,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
     }, [userId]);
 
     useEffect(() => {
-        const handleMessageRead = (data: {userId: string, room: "staff-room" | "user-room", readAt: string, messageIds: string[]}) => {
+        const handleMessageRead = (data: {userId: string, room: "staff-room" | "user-room", readAt: string, messageIds: string[], username: string}) => {
 
             if(data.room !== room) return
 
@@ -99,7 +99,10 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                             readBy: [
                                 ...message.readBy,
                                 {
-                                    readerId: data.userId,
+                                    readerId: {
+                                        _id: data.userId,
+                                        username: data.username
+                                    },
                                     readAt: data.readAt
                                 }
                             ]
@@ -286,14 +289,13 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                                         <p className="text-[11px]">{formatDate(m.createdAt)}</p>
                                         <div>
                                             {m.readBy.map(r => {
-                                                const reader = typeof r.readerId === "string" ? null : {
+                                                const reader = typeof r.readerId === "string" ? r.readerId : {
                                                     id : r.readerId._id,
                                                     username: r.readerId.username
                                                 }
 
-                                                if(!reader) return null
-
-                                                {!isMine && <p className="text-xs text-gray-700" key={reader.id}>seen by {reader.username}</p>}
+                                                if(typeof reader === "string") return null
+                                                return <p className="text-xs text-gray-700" key={reader.id}>seen by {reader.username}</p>
                                             })}
                                         </div>
                                     </div>}
