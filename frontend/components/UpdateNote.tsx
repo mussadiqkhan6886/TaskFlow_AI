@@ -62,18 +62,29 @@ const UpdateNote = ({ note, role }: { note: NoteType, role?:string }) => {
       id: note._id,
       ...data
     });
-
-    if(data.status === "Completed"){
-      socket.on("notification", (data) => {
-        toast.success(`${data.username} Completed ${data.title} Task`, {
-          id: "update"
-        })
-      })
-
-    }
-
-
   };
+
+  useEffect(() => {
+    const handleNotification = (data:{
+        username:string,
+        title:string
+    }) => {
+
+        toast.success(
+            `${data.username} Completed ${data.title} Task`,
+            {
+                id:"update"
+            }
+        );
+
+    };
+
+    socket.on("notification", handleNotification);
+    return () => {
+        socket.off("notification", handleNotification);
+    };
+
+}, []);
 
 
   return (
