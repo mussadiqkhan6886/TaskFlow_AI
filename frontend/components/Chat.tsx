@@ -1,15 +1,17 @@
 'use client';
+import { formatDate } from '@/lib/helpers/formatDate';
 import { getAllMessages } from '@/server/message';
 import { socket } from '@/socket';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { FormEvent, useEffect, useRef, useState } from 'react'
-import { FiChevronUp, FiSend, FiX } from 'react-icons/fi';
+import { FiChevronUp, FiInfo, FiSend, FiX } from 'react-icons/fi';
 
 const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-room", userId: string}) => {
     const [collapsed, setCollapsed] = useState(true)
     const [message, setMessage] = useState("")
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+    const [infoId, setInfoId] = useState('')
     const {data: messages = [], isLoading} = useQuery({
         queryKey: [`messages`, room],
         queryFn: () => getAllMessages(room),
@@ -123,7 +125,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
 
         setMessage("")
     }
-
+    console.log(messages)
   return (
     <div className={`bg-zinc-100 relative shadow-2xl border border-zinc-200 rounded-t-lg w-[360px] ${collapsed ? "h-[60px]" : "h-[450px]"} flex flex-col`}>
             <div className="border-b border-zinc-800 p-3 flex flex-row relative items-center justify-between bg-zinc-200">
@@ -170,7 +172,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                         </div>
             :
             <div className="flex-1 overflow-y-auto p-3 space-y-3">
-                {messages.map((m) => {
+                {messages.map((m:Message) => {
                     const sender =
                         m.sender ??
                         (typeof m.senderId === "object"
@@ -187,6 +189,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                         : false;
                     const username = sender?.username ?? "Unknown";
                     const initial = username.charAt(0).toUpperCase();
+
                     return (
                         <div
                             key={m._id}
@@ -223,14 +226,42 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                                         </span>
                                     )}
 
-                                    <div
-                                        className={`rounded-2xl px-3 py-2 ${
-                                            isMine
-                                                ? "rounded-br-sm bg-blue-500 text-white"
-                                                : "rounded-bl-sm bg-zinc-200 text-zinc-900"
-                                        }`}
-                                    >
-                                        {m.message}
+                                    <div className={`flex gap-3 items-center ${isMine ? "flex-row-reverse" : "flex-row"}`}>
+                                        <div
+                                            className={`rounded-2xl px-3 py-2 ${
+                                                isMine
+                                                    ? "rounded-br-sm bg-blue-500 text-white"
+                                                    : "rounded-bl-sm bg-zinc-200 text-zinc-900"
+                                            }`}
+                                        >
+                                            {m.message}
+                                        </div>
+                                        <button onClick={() => {
+                                            if(infoId){
+                                                setInfoId("")
+                                            }else{
+                                                setInfoId(m._id)
+                                            }
+                                        }} className="cursor-pointer">
+                                            <FiInfo />
+                                        </button>
+                                        {m._id === infoId && <div>
+                                                <p className="text-xs">{formatDate(m.createdAt)}</p>
+                                                <div>
+                                                    {m.readBy.map(r => {
+                                                        const reader = typeof r.readerId === "string" ? null : {
+                                                            id : r.readerId._id,
+                                                            username: r.readerId.username
+                                                        }
+
+                                                        if(!reader) return null
+
+                                                        return (
+                                                            <p className="text-xs text-gray-700" key={reader.id}>seen by {reader.username}</p>
+                                                        )
+                                                    })}
+                                                </div>
+                                            </div>}
                                     </div>
                                 </div>
                             </div>

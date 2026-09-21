@@ -72,4 +72,6 @@ type Message = {
             };
         readAt: string;
     }[];
+
+    createdAt: string
 };
