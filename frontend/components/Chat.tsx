@@ -12,7 +12,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
     const [infoId, setInfoId] = useState('')
-    const [userTypingId, setUserTypingId] = useState<null | string>(null)
+    const [userTypingId, setUserTypingId] = useState<null | {userId: string, username: string}>(null)
 
     const {data: messages = [], isLoading} = useQuery({
         queryKey: [`messages`, room],
@@ -123,8 +123,8 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
     }, [room, collapsed]);
 
     useEffect(() => {
-        const handleTyping = (data: {userId: string}) => {
-            setUserTypingId(data.userId)
+        const handleTyping = (data: {userId: string, username: string}) => {
+            setUserTypingId(data)
         }
         socket.on("user-typing", handleTyping)
 
@@ -303,9 +303,10 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                     );
                 })}
                 {
-                    (userTypingId && userTypingId !== userId) && (
-                        <div>
-                            {userId} is typing...
+                    (userTypingId && userTypingId.userId !== userId) && (
+                        <div className="flex gap-3 items-center">
+                            <p className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-300 border border-blue-400 relative uppercase">{userTypingId.username.charAt(0)}</p>
+                            <p className="text-sm text-zinc-700">{userTypingId.username} is typing...</p>
                         </div>
                     )
                 }
@@ -318,7 +319,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                     <input value={message} onChange={(e) => {
                         setMessage(e.target.value);
                         handleTyping();
-                    }} type="text" placeholder="Enter your message..." className="p-3 w-full outline-0" />
+                    }} type="text" placeholder="Enter your message..." className="p-3 w-full outline-0" autoComplete='off' />
                 </div>
                 <button type="submit" className="cursor-pointer  rounded-full p-2">
                     <FiSend size={22}  />

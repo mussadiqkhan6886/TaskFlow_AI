@@ -81,7 +81,8 @@ export const chatHandler = (io: Server, socket: Socket) => {
 
     socket.on("typing", (data) => {
         socket.to(data.room).emit("user-typing", {
-            userId: socket.user.id
+            userId: socket.user.id,
+            username: socket.user.username
         })
     })
 }
