@@ -9,7 +9,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
     const [collapsed, setCollapsed] = useState(true)
     const [message, setMessage] = useState("")
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
+    const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
     const {data: messages = [], isLoading} = useQuery({
         queryKey: [`messages`, room],
         queryFn: () => getAllMessages(room),
@@ -60,6 +60,18 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
             socket.off("new-message", handleMessage);
         };
     }, [room, queryClient]);
+
+    useEffect(() => {
+        const handleOnlineUsers = (data: string[]) => {
+            setOnlineUsers(data);
+        };
+
+        socket.on("online-users", handleOnlineUsers);
+
+        return () => {
+            socket.off("online-users", handleOnlineUsers);
+        };
+    }, [userId]);
 
     useEffect(() => {
         const handleMessageRead = (data: {userId: string, room: "staff-room" | "user-room", readAt: string, messageIds: string[]}) => {
@@ -170,10 +182,11 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                             : null);
 
                     const isMine = sender?.id === userId;
-
+                    const isOnline = sender?.id 
+                        ? onlineUsers.includes(sender.id)
+                        : false;
                     const username = sender?.username ?? "Unknown";
                     const initial = username.charAt(0).toUpperCase();
-
                     return (
                         <div
                             key={m._id}
@@ -189,10 +202,11 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                                 }`}
                             >
                                 {!isMine && (
-                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-300 border border-blue-400">
+                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-300 border border-blue-400 relative">
                                         <span className="font-semibold text-sm">
                                             {initial}
                                         </span>
+                                        <div className={` ${isOnline ? "bg-green-500" : "bg-zinc-400"} rounded-full p-1.5 absolute -top-1 -left-1`} />
                                     </div>
                                 )}
 
