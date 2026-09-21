@@ -3,8 +3,10 @@ import { formatDate } from '@/lib/helpers/formatDate';
 import { getAllMessages } from '@/server/message';
 import { socket } from '@/socket';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { FormEvent, useEffect, useRef, useState } from 'react'
+import React, { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { FiChevronUp, FiInfo, FiSend, FiX } from 'react-icons/fi';
+import ChatLoader from './ChatLoader';
+import MessageTyping from './MessageTyping';
 
 const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-room", userId: string}) => {
     const [collapsed, setCollapsed] = useState(true)
@@ -30,8 +32,8 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
         }
     }, [messages, collapsed, userTypingId]);
 
-    const unReadMsgCount = 
-        messages.reduce((count : number, m) : number => {
+    const unReadMsgCount = useMemo(() : number => {
+        return messages.reduce((count : number, m) : number => {
             const senderId = typeof m.senderId === "string" ? m.senderId : m.senderId._id
             if(senderId === userId){
                 return count
@@ -44,6 +46,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
 
             return alreadyRead ? count : count + 1
         }, 0)
+    }, [messages, userId])
 
     useEffect(() => {
         const handleMessage = (data: Message) => {
@@ -177,38 +180,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                 }} className="font-semibold cursor-pointer" size={22} />  : <FiX onClick={() => setCollapsed(true)} className="font-semibold cursor-pointer" size={22} />}    
             </div>
             
-            {isLoading ? 
-                        <div className="flex-1 overflow-y-auto p-3 space-y-4 animate-pulse">
-                            {/* Left message */}
-                            <div className="flex items-end gap-2">
-                                <div className="w-8 h-8 rounded-full bg-zinc-300 shrink-0" />
-
-                                <div className="space-y-2">
-                                    <div className="h-3 w-16 rounded bg-zinc-300" />
-                                    <div className="h-10 w-40 rounded-2xl bg-zinc-300" />
-                                </div>
-                            </div>
-
-                            {/* Right message */}
-                            <div className="flex justify-end">
-                                <div className="h-10 w-32 rounded-2xl bg-zinc-300" />
-                            </div>
-
-                            {/* Left message */}
-                            <div className="flex items-end gap-2">
-                                <div className="w-8 h-8 rounded-full bg-zinc-300 shrink-0" />
-
-                                <div className="space-y-2">
-                                    <div className="h-3 w-20 rounded bg-zinc-300" />
-                                    <div className="h-12 w-48 rounded-2xl bg-zinc-300" />
-                                </div>
-                            </div>
-
-                            {/* Right message */}
-                            <div className="flex justify-end">
-                                <div className="h-10 w-44 rounded-2xl bg-zinc-300" />
-                            </div>
-                        </div>
+            {isLoading ? <ChatLoader />
             :
             <div className="flex-1 overflow-y-auto p-3 space-y-3">
                 {messages.map((m:Message) => {
@@ -223,25 +195,17 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                             : null);
 
                     const isMine = sender?.id === userId;
-                    const isOnline = sender?.id 
-                        ? onlineUsers.includes(sender.id)
-                        : false;
+                    const isOnline = sender?.id ? onlineUsers.includes(sender.id) : false;
                     const username = sender?.username ?? "Unknown";
                     const initial = username.charAt(0).toUpperCase();
 
                     return (
                         <div
                             key={m._id}
-                            className={`flex w-full ${
-                                isMine ? "justify-end" : "justify-start"
-                            }`}
+                            className={`flex w-full ${ isMine ? "justify-end" : "justify-start"}`}
                         >
                             <div
-                                className={`flex max-w-[80%] gap-2 ${
-                                    isMine
-                                        ? "flex-row-reverse"
-                                        : "flex-row"
-                                }`}
+                                className={`flex max-w-[80%] gap-2 ${isMine ? "flex-row-reverse": "flex-row"}`}
                             >
                                 {!isMine && (
                                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-300 border border-blue-400 relative">
@@ -253,11 +217,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                                 )}
 
                                 <div
-                                    className={`flex gap-2 flex-col ${
-                                        isMine
-                                            ? "items-end"
-                                            : "items-start"
-                                    }`}
+                                    className={`flex gap-2 flex-col ${isMine ? "items-end" : "items-start"}`}
                                 >
                                     {!isMine && (
                                         <span className="mb-1 px-1 text-xs font-semibold text-zinc-500">
@@ -267,12 +227,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
 
                                     <div className={`flex relative gap-3 items-center ${isMine ? "flex-row-reverse" : "flex-row"}`}>
                                         <div
-                                            className={`max-w-[160px] wrap-break-word rounded-2xl px-3 py-2 ${
-                                                isMine
-                                                    ? "rounded-br-sm bg-blue-500 text-white"
-                                                    : "rounded-bl-sm bg-zinc-200 text-zinc-900"
-                                            }`}
-                                        >
+                                            className={`max-w-[160px] wrap-break-word rounded-2xl px-3 py-2 ${ isMine ? "rounded-br-sm bg-blue-500 text-white" : "rounded-bl-sm bg-zinc-200 text-zinc-900"}`}>
                                             {m.message}
                                         </div>
                                         <button onClick={() => {
@@ -304,14 +259,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                         </div>
                     );
                 })}
-                {
-                    (userTypingId && userTypingId.userId !== userId) && (
-                        <div className="flex gap-3 items-center">
-                            <p className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-300 border border-blue-400 relative uppercase">{userTypingId.username.charAt(0)}</p>
-                            <p className="text-sm text-zinc-700">{userTypingId.username} is typing...</p>
-                        </div>
-                    )
-                }
+                <MessageTyping userTypingId={userTypingId} userId={userId} />
                 <div ref={messagesEndRef} />
             </div>
             }
