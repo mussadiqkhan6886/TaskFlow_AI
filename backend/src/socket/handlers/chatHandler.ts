@@ -1,7 +1,6 @@
-import { Socket } from "socket.io";
+import { Socket, Server } from "socket.io";
 import { messageSchema } from "../../schemas/messageSchema";
 import { Message } from "../../models/MessageModel";
-import { Server } from "socket.io";
 
 export const chatHandler = (io: Server, socket: Socket) => {
     socket.on("send-message", async(data) => {
