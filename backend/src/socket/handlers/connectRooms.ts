@@ -5,4 +5,6 @@ export const connectRooms = (socket: Socket) => {
         socket.join("staff-room")
     }
     socket.join("user-room")
+    socket.join(socket.user.id)
+    socket.join(socket.user.role)
 }

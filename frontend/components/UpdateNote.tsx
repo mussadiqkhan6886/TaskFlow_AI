@@ -2,9 +2,11 @@
 
 import { updateNote } from '@/server/note';
 import { getUsersId } from '@/server/user';
+import { socket } from '@/socket';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import React, { ChangeEvent, FormEvent, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 const UpdateNote = ({ note, role }: { note: NoteType, role?:string }) => {
 
@@ -52,7 +54,6 @@ const UpdateNote = ({ note, role }: { note: NoteType, role?:string }) => {
 
   };
 
-
   const handleSubmit = (e: FormEvent) => {
 
     e.preventDefault();
@@ -61,6 +62,16 @@ const UpdateNote = ({ note, role }: { note: NoteType, role?:string }) => {
       id: note._id,
       ...data
     });
+
+    if(data.status === "Completed"){
+      socket.on("notification", (data) => {
+        toast.success(`${data.username} Completed ${data.title} Task`, {
+          id: "update"
+        })
+      })
+
+    }
+
 
   };
 

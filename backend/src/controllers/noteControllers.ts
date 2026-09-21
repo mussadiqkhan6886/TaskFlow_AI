@@ -4,6 +4,7 @@ import { noteSchema, noteUpdateSchema } from "../schemas/noteSchema";
 import { ROLES } from "../lib/constants";
 import { redis } from "../config/connectRedis";
 import { deleteNoteCache } from "../lib/helpers/deleteCache";
+import { notificationHandler } from "../socket/handlers/notificationHandler";
 
 interface filterQuery  {
     priority?: string
@@ -149,6 +150,11 @@ export const updateNote = async (req: Request, res: Response) : Promise<void> =>
         res.status(404).json({success:false, message: "Note not found or you don't have permission"})
         return
     }
+
+    if(note.status === "Completed"){
+        notificationHandler(note.noteFor.toString(), note.title)
+    }
+
     await deleteNoteCache()
     await redis.del(`note?id=${id}`);
     res.status(200).json({success:true, message: "Note updated successfully", note})
