@@ -4,7 +4,7 @@ import { noteSchema, noteUpdateSchema } from "../schemas/noteSchema";
 import { ROLES } from "../lib/constants";
 import { redis } from "../config/connectRedis";
 import { deleteNoteCache } from "../lib/helpers/deleteCache";
-import { notificationHandler } from "../socket/handlers/notificationHandler";
+import { notificationGetter, notificationHandler } from "../socket/handlers/notificationHandler";
 
 interface filterQuery  {
     priority?: string
@@ -110,7 +110,7 @@ export const createNewNote = async (req: Request, res: Response) : Promise<void>
     const data = safeParsedData.data
 
     const newNote = await Note.create(data)
-
+    notificationGetter(newNote.noteFor.toString(), req?.user?.id)
     await deleteNoteCache()
     res.status(201).json({success:true, newNote})
 

@@ -1,6 +1,7 @@
 import TanStackQueryProvider from "@/components/provider/TanStackQueryProvider";
 import "./globals.css";
 import { Toaster } from "sonner";
+import Notification from "@/components/Notification";
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -14,6 +15,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             position="top-right"
             richColors
           />
+          <Notification />
           {children}
         </TanStackQueryProvider>
         </body>

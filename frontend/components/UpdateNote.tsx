@@ -64,29 +64,6 @@ const UpdateNote = ({ note, role }: { note: NoteType, role?:string }) => {
     });
   };
 
-  useEffect(() => {
-    const handleNotification = (data:{
-        username:string,
-        title:string
-    }) => {
-
-        toast.success(
-            `${data.username} Completed ${data.title} Task`,
-            {
-                id:"update"
-            }
-        );
-
-    };
-
-    socket.on("notification", handleNotification);
-    return () => {
-        socket.off("notification", handleNotification);
-    };
-
-}, []);
-
-
   return (
     <form
       onSubmit={handleSubmit}
