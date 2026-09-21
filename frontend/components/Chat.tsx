@@ -12,6 +12,8 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
     const [infoId, setInfoId] = useState('')
+    const [userTypingId, setUserTypingId] = useState<null | string>(null)
+
     const {data: messages = [], isLoading} = useQuery({
         queryKey: [`messages`, room],
         queryFn: () => getAllMessages(room),
@@ -26,7 +28,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                 behavior: "smooth",
             });
         }
-    }, [messages, collapsed]);
+    }, [messages, collapsed, userTypingId]);
 
     const unReadMsgCount = 
         messages.reduce((count : number, m) : number => {
@@ -52,7 +54,12 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                     ...oldMessages,
                     data,
                 ]
-            );
+            )
+            if (!collapsed && data.senderId !== userId) {
+                socket.emit("mark-messages-read", {
+                    room,
+                });
+            }
 
         };
 
@@ -61,7 +68,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
         return () => {
             socket.off("new-message", handleMessage);
         };
-    }, [room, queryClient]);
+    }, [room, queryClient, userId, collapsed]);
 
     useEffect(() => {
         const handleOnlineUsers = (data: string[]) => {
@@ -115,6 +122,23 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
         }
     }, [room, collapsed]);
 
+    useEffect(() => {
+        const handleTyping = (data: {userId: string}) => {
+            setUserTypingId(data.userId)
+        }
+        socket.on("user-typing", handleTyping)
+
+        return () => {
+            socket.off("user-typing", handleTyping)
+        }
+    }, [])
+
+    const handleTyping = () => {
+        socket.emit("typing", {
+            room
+        })
+    }
+
     const submitMessage = (e: FormEvent) => {
         e.preventDefault()
         if(!message.trim()) return;
@@ -125,6 +149,16 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
 
         setMessage("")
     }
+    useEffect(() => {
+        if(!userTypingId) return;
+
+        const timer = setTimeout(() => {
+            setUserTypingId(null);
+        }, 2000);
+
+        return () => clearTimeout(timer);
+
+    }, [userTypingId]);
   return (
     <div className={`bg-zinc-100 relative shadow-2xl border border-zinc-200 rounded-t-lg w-[360px] ${collapsed ? "h-[60px]" : "h-[450px]"} flex flex-col`}>
             <div className="border-b border-zinc-800 p-3 flex flex-row relative items-center justify-between bg-zinc-200">
@@ -216,7 +250,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                                 )}
 
                                 <div
-                                    className={`flex flex-col ${
+                                    className={`flex gap-2 flex-col ${
                                         isMine
                                             ? "items-end"
                                             : "items-start"
@@ -228,9 +262,9 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                                         </span>
                                     )}
 
-                                    <div className={`flex gap-3 items-center ${isMine ? "flex-row-reverse" : "flex-row"}`}>
+                                    <div className={`flex relative gap-3 items-center ${isMine ? "flex-row-reverse" : "flex-row"}`}>
                                         <div
-                                            className={`rounded-2xl px-3 py-2 ${
+                                            className={`max-w-[160px] wrap-break-word rounded-2xl px-3 py-2 ${
                                                 isMine
                                                     ? "rounded-br-sm bg-blue-500 text-white"
                                                     : "rounded-bl-sm bg-zinc-200 text-zinc-900"
@@ -247,34 +281,44 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                                         }} className="cursor-pointer">
                                             <FiInfo />
                                         </button>
-                                        {m._id === infoId && <div className="bg-zinc-200 rounded-full p-0.5">
-                                                <p className="text-[11px]">{formatDate(m.createdAt)}</p>
-                                                <div>
-                                                    {m.readBy.map(r => {
-                                                        const reader = typeof r.readerId === "string" ? null : {
-                                                            id : r.readerId._id,
-                                                            username: r.readerId.username
-                                                        }
-
-                                                        if(!reader) return null
-
-                                                        {!isMine && <p className="text-xs text-gray-700" key={reader.id}>seen by {reader.username}</p>}
-                                                    })}
-                                                </div>
-                                            </div>}
                                     </div>
+                                    {m._id === infoId && <div className="bg-zinc-200 rounded-full p-0.5">
+                                        <p className="text-[11px]">{formatDate(m.createdAt)}</p>
+                                        <div>
+                                            {m.readBy.map(r => {
+                                                const reader = typeof r.readerId === "string" ? null : {
+                                                    id : r.readerId._id,
+                                                    username: r.readerId.username
+                                                }
+
+                                                if(!reader) return null
+
+                                                {!isMine && <p className="text-xs text-gray-700" key={reader.id}>seen by {reader.username}</p>}
+                                            })}
+                                        </div>
+                                    </div>}
                                 </div>
                             </div>
                         </div>
                     );
                 })}
+                {
+                    (userTypingId && userTypingId !== userId) && (
+                        <div>
+                            {userId} is typing...
+                        </div>
+                    )
+                }
                 <div ref={messagesEndRef} />
             </div>
             }
             
             <form onSubmit={submitMessage} className="border-t mt-auto border-zinc-800 flex flex-row gap-4 items-center w-full px-2">
                 <div className="w-full">
-                    <input value={message} onChange={e => setMessage(e.target.value)} type="text" placeholder="Enter your message..." className="p-3 w-full outline-0" />
+                    <input value={message} onChange={(e) => {
+                        setMessage(e.target.value);
+                        handleTyping();
+                    }} type="text" placeholder="Enter your message..." className="p-3 w-full outline-0" />
                 </div>
                 <button type="submit" className="cursor-pointer  rounded-full p-2">
                     <FiSend size={22}  />

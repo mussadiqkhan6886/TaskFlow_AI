@@ -78,4 +78,10 @@ export const chatHandler = (io: Server, socket: Socket) => {
             console.error("Mark messages read error:", error);
         }
     })
+
+    socket.on("typing", (data) => {
+        socket.to(data.room).emit("user-typing", {
+            userId: socket.user.id
+        })
+    })
 }
