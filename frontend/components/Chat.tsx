@@ -125,12 +125,14 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
 
         setMessage("")
     }
-    console.log(messages)
   return (
     <div className={`bg-zinc-100 relative shadow-2xl border border-zinc-200 rounded-t-lg w-[360px] ${collapsed ? "h-[60px]" : "h-[450px]"} flex flex-col`}>
             <div className="border-b border-zinc-800 p-3 flex flex-row relative items-center justify-between bg-zinc-200">
-                <div className=" rounded-full bg-blue-300 border aspect-square border-blue-400">
-                    <p className="font-semibold text-[16px] px-3 py-1">{name}</p>
+                <div className="flex gap-3 items-center">
+                    <div className=" rounded-full bg-blue-300 border aspect-square border-blue-400">
+                        <p className="font-semibold text-[16px] px-3 py-1">{name}</p>
+                    </div>
+                    <p className="font-semibold capitalize">{room.replace("-", " ")}</p>
                 </div>
                 {unReadMsgCount > 0 && <div className="absolute -top-3 -right-3 min-w-5 h-5 px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">{unReadMsgCount > 99 ? "99+" : unReadMsgCount}</div>}
                 {collapsed ? <FiChevronUp onClick={() => {
@@ -237,7 +239,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                                             {m.message}
                                         </div>
                                         <button onClick={() => {
-                                            if(infoId){
+                                            if(infoId && m._id === infoId){
                                                 setInfoId("")
                                             }else{
                                                 setInfoId(m._id)
@@ -245,8 +247,8 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
                                         }} className="cursor-pointer">
                                             <FiInfo />
                                         </button>
-                                        {m._id === infoId && <div>
-                                                <p className="text-xs">{formatDate(m.createdAt)}</p>
+                                        {m._id === infoId && <div className="bg-zinc-200 rounded-full p-0.5">
+                                                <p className="text-[11px]">{formatDate(m.createdAt)}</p>
                                                 <div>
                                                     {m.readBy.map(r => {
                                                         const reader = typeof r.readerId === "string" ? null : {
@@ -256,9 +258,7 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
 
                                                         if(!reader) return null
 
-                                                        return (
-                                                            <p className="text-xs text-gray-700" key={reader.id}>seen by {reader.username}</p>
-                                                        )
+                                                        {!isMine && <p className="text-xs text-gray-700" key={reader.id}>seen by {reader.username}</p>}
                                                     })}
                                                 </div>
                                             </div>}
