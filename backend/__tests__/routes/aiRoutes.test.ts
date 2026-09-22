@@ -10,7 +10,7 @@ describe("ai route", () => {
     it("will post /generate successfully", async () => {
         const {accessToken} = await createAccessToken("Employee")
 
-        const res = await request(app).post("api/ai/generate").set("Cookie", [`accessToken=${accessToken}`]).send({
+        const res = await request(app).post("/api/ai/generate").set("Cookie", [`accessToken=${accessToken}`]).send({
             action:"priority",
             description:"Create authentication system",
             noteId: ""

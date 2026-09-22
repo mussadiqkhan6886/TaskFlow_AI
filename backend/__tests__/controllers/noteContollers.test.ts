@@ -26,6 +26,10 @@ vi.mock("../../src/config/connectRedis", () => ({
     }
 }))
 
+vi.mock("../../src/socket/handlers/notificationHandler", () => ({
+    notificationHandler: vi.fn(),
+    notificationGetter: vi.fn(),
+}));
 
 const Notes = [
     {
@@ -302,7 +306,8 @@ describe("note controller", () => {
         vi.mocked(Note.findOneAndUpdate).mockResolvedValue({
             _id: "123",
             title: "title changed",
-            status: "Completed"
+            status: "Completed",
+            noteFor: "456"
         })
         
         await updateNote(req, res)
@@ -325,7 +330,8 @@ describe("note controller", () => {
         expect(res.status).toHaveBeenCalledWith(200)
         expect(res.json).toHaveBeenCalledWith({success: true, message: "Note updated successfully", note: { _id: "123",
             title: "title changed",
-            status: "Completed"}})
+            status: "Completed",
+            noteFor: "456"}})
     })
     
     it("will not update current note and send status of 400 if no id is given", async () => {

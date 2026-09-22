@@ -79,6 +79,12 @@ describe("message controller", () => {
 
     it("will send 400 error if room is not sent", async () => {
 
+        req = {
+            params: {
+                room: ""
+            }
+        }
+
         await getAllMessages(req, res);
 
         expect(Message.find).not.toHaveBeenCalled();

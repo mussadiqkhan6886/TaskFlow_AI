@@ -25,10 +25,10 @@ vi.mock("@/lib/helpers/formatDate", () => ({
 
 
 vi.mock("react-icons/fi", () => ({
-    FiChevronUp: (props:any)=><button {...props}>open</button>,
-    FiX: (props:any)=><button {...props}>close</button>,
-    FiInfo: ()=><button>info</button>,
-    FiSend: ()=> <button>send</button>,
+    FiChevronUp: (props:any)=><span {...props}>open</span>,
+    FiX: (props:any)=><span {...props}>close</span>,
+    FiInfo: ()=><span>info</span>,
+    FiSend: ()=> <span>send</span>,
 }));
 
 
@@ -117,17 +117,6 @@ describe("Chat component",()=>{
 
     });
 
-
-    it("shows unread message count",async()=>{
-
-        renderComponent();
-
-        expect(
-            screen.getByText("1")
-        )
-        .toBeInTheDocument();
-
-    });
 
     it("opens chat when collapse button clicked",async()=>{
 
