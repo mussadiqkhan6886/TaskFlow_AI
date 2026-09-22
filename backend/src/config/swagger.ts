@@ -312,9 +312,166 @@ const options: swaggerJsdoc.Options = {
                     },
             
                 },
+                Message: {
+    type: "object",
+    properties: {
+        id: {
+            type: "string",
+            example: "65f123abc456",
+        },
+
+        message: {
+            type: "string",
+            example: "Hello, how are you?",
+            description: "Message content",
+        },
+
+        room: {
+            type: "string",
+            enum: [
+                "user-room",
+                "staff-room"
+            ],
+            example: "user-room",
+            description: "Chat room identifier",
+        },
+
+        senderId: {
+            oneOf: [
+                {
+                    type: "string",
+                    example: "65f123abc789",
+                },
+                {
+                    type: "object",
+                    properties: {
+                        _id: {
+                            type: "string",
+                            example: "65f123abc789",
+                        },
+                        username: {
+                            type: "string",
+                            example: "john",
+                        },
+                        role: {
+                            type: "string",
+                            example: "Employee",
+                        },
+                    },
+                },
+            ],
+            description: "Sender user reference",
+        },
+
+        sender: {
+            type: "object",
+            nullable: true,
+            properties: {
+                id: {
+                    type: "string",
+                    example: "65f123abc789",
+                },
+                username: {
+                    type: "string",
+                    example: "john",
+                },
+                role: {
+                    type: "string",
+                    example: "Employee",
+                },
+            },
+            description: "Populated sender information",
+        },
+
+        readBy: {
+            type: "array",
+            description: "Users who have read this message",
+            items: {
+                type: "object",
+                properties: {
+                    readerId: {
+                        oneOf: [
+                            {
+                                type: "string",
+                                example: "65f123abc789",
+                            },
+                            {
+                                type: "object",
+                                properties: {
+                                    _id: {
+                                        type: "string",
+                                        example: "65f123abc789",
+                                    },
+                                    username: {
+                                        type: "string",
+                                        example: "admin",
+                                    },
+                                },
+                            },
+                        ],
+                    },
+
+                    readAt: {
+                        type: "string",
+                        format: "date-time",
+                        example: "2026-09-22T12:35:00.000Z",
+                    },
+                },
+            },
+        },
+
+        createdAt: {
+            type: "string",
+            format: "date-time",
+            example: "2026-09-22T12:30:00.000Z",
+        },
+    },
+},
+                AIRequest: {
+                    type: "object",
+                    required: [
+                        "action"
+                    ],
+                    properties: {
+                        noteId: {
+                            type: "string",
+                            example: "65f123abc456",
+                            description: "Existing note id. Used when generating AI response from saved note"
+                        },
+                        action: {
+                            type: "string",
+                            enum: [
+                                "summary",
+                                "priority"
+                            ],
+                            example: "priority",
+                            description: "AI operation to perform"
+                        },
+                        description: {
+                            type: "string",
+                            example: "Fix authentication issue where refresh token expires incorrectly",
+                            description: "Text content for AI generation. Either description or noteId must be provided"
+                        }
+                    }
+                },
+
+                AIResponse: {
+                    type: "object",
+                    properties: {
+                        success: {
+                            type: "boolean",
+                            example: true
+                        },
+                        answer: {
+                            type: "string",
+                            example: "High"
+                        }
+                    }
+                },
             }
         }
     },
+    
     apis: [
         "./src/routes/*.ts",
         "./src/controllers/*.ts",
