@@ -74,8 +74,3 @@ type Message = {
 
     createdAt: string
 };
-
-type GetMessagesResponse = {
-    msgs: Message[];
-    nextCursor: string | null;
-}

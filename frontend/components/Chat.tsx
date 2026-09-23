@@ -2,7 +2,7 @@
 import { formatDate } from '@/lib/helpers/formatDate';
 import { getAllMessages } from '@/server/message';
 import { socket } from '@/socket';
-import { InfiniteData, useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { FiChevronUp, FiInfo, FiSend, FiX } from 'react-icons/fi';
 import ChatLoader from './ChatLoader';
@@ -12,53 +12,28 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
     const [collapsed, setCollapsed] = useState(true)
     const [message, setMessage] = useState("")
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
-    const messagesContainerRef = useRef<HTMLDivElement | null>(null);
     const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
     const [infoId, setInfoId] = useState('')
     const [userTypingId, setUserTypingId] = useState<null | {userId: string, username: string}>(null)
 
-    const {data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage} = useInfiniteQuery<GetMessagesResponse, Error, InfiniteData<GetMessagesResponse>, ["messages", string], string | null>({
+    const {data: messages = [], isLoading} = useQuery({
         queryKey: [`messages`, room],
-        queryFn: ({pageParam}: {pageParam: string | null}) => getAllMessages(room, 20 ,pageParam),
-        initialPageParam: null,
-        getNextPageParam: (lastPage) => lastPage.nextCursor
+        queryFn: () => getAllMessages(room),
+        staleTime: 30_000
     })
 
-    const handleScroll = () => {
-
-        const container = messagesContainerRef.current;
-
-        if (!container) return;
-
-
-        if(
-            container.scrollTop === 0 &&
-            hasNextPage &&
-            !isFetchingNextPage
-        ){
-            fetchNextPage();
-        }
-    };
-
-    const allMessages = data?.pages.flatMap(page => page.msgs) ?? [];
     const queryClient = useQueryClient()
 
     useEffect(() => {
-        if(!collapsed){
-            messagesEndRef.current
-                ?.scrollIntoView({
-                    behavior:"smooth"
-                });
-
+        if (!collapsed) {
+            messagesEndRef.current?.scrollIntoView({
+                behavior: "smooth",
+            });
         }
-    },[
-        allMessages.length,
-        collapsed,
-        userTypingId
-    ]);
+    }, [messages, collapsed, userTypingId]);
 
     const unReadMsgCount = useMemo(() : number => {
-        return allMessages.reduce((count : number, m: Message) : number => {
+        return messages.reduce((count : number, m) : number => {
             const senderId = typeof m.senderId === "string" ? m.senderId : m.senderId._id
             if(senderId === userId){
                 return count
@@ -71,35 +46,17 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
 
             return alreadyRead ? count : count + 1
         }, 0)
-    }, [allMessages, userId])
+    }, [messages, userId])
 
     useEffect(() => {
         const handleMessage = (data: Message) => {
             if (data.room !== room) return;
-            queryClient.setQueryData<InfiniteData<GetMessagesResponse>>(
+            queryClient.setQueryData<Message[]>(
                 ["messages", room],
-                oldData => {
-                    if(!oldData){
-                        return oldData
-                    }
-
-                    return {
-                        ...oldData,
-                        pages: oldData.pages.map((page, index) => {
-                            if(index !== 0){
-                                return page
-                            }
-
-                            return {
-                                ...page,
-                                msgs: [
-                                    ...page.msgs,
-                                    data
-                                ]
-                            }
-                        })
-                    }
-                }
+                (oldMessages = []) => [
+                    ...oldMessages,
+                    data,
+                ]
             )
             if (!collapsed && data.senderId !== userId) {
                 socket.emit("mark-messages-read", {
@@ -133,50 +90,28 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
 
             if(data.room !== room) return
 
-            queryClient.setQueryData<InfiniteData<GetMessagesResponse>>(
-                ["messages",room],
-                (oldData)=>{
-
-                if(!oldData) return oldData;
-
-
-                return {
-                ...oldData,
-
-                pages: oldData.pages.map(page=>({
-
-                    ...page,
-
-                    msgs:page.msgs.map(message=>{
-
+            queryClient.setQueryData<Message[]>(
+                ["messages", room],
+                (oldMessages = []) =>  oldMessages.map(message => {
                         if(!data.messageIds.includes(message._id)){
-                            return message;
+                            return message
                         }
-
 
                         return {
                             ...message,
-
-                            readBy:[
+                            readBy: [
                                 ...message.readBy,
-
                                 {
-                                    readerId:{
-                                        _id:data.userId,
-                                        username:data.username
+                                    readerId: {
+                                        _id: data.userId,
+                                        username: data.username
                                     },
-
-                                    readAt:data.readAt
+                                    readAt: data.readAt
                                 }
                             ]
                         }
                     })
-
-                }))
-
-                }
-
-                })
+            )
         }
 
         socket.on("messages-read", handleMessageRead)
@@ -247,15 +182,8 @@ const Chat = ({name, room, userId}: {name: string, room: "staff-room" | "user-ro
             
             {isLoading ? <ChatLoader />
             :
-            <div ref={messagesContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto p-3 space-y-3">
-
-                { isFetchingNextPage && <p className=" text-center text-xs text-gray-500 " >
-                Loading older messages...
-                </p>
-                }
-
-
-                {allMessages.map((m:Message) => {
+            <div className="flex-1 overflow-y-auto p-3 space-y-3">
+                {messages.map((m:Message) => {
                     const sender =
                         m.sender ??
                         (typeof m.senderId === "object"
