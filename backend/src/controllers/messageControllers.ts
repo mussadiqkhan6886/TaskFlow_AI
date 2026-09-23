@@ -40,6 +40,7 @@ export const getAllMessages = async (req: Request<MessageParams,{}, {}, QueryTyp
     if(hasMore){
         msgs.pop()
     }
+    const result = msgs.reverse()
 
-    res.status(200).json({success: true, msgs, nextCursor: hasMore ? msgs[9]._id : null})
+    res.status(200).json({success: true, msgs: result, nextCursor: hasMore ? result[0]._id : null})
 }
