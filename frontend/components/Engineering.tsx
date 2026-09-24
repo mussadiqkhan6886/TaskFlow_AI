@@ -125,7 +125,7 @@ export default function Engineering() {
                 {area.title}
               </h3>
             </div>
-            <p className="mb-3 font-mono text-[11px] text-[#5A5E66]">
+            <p className="mb-3   text-[11px] text-[#5A5E66]">
               {area.path}
             </p>
             <ul className="space-y-1.5">

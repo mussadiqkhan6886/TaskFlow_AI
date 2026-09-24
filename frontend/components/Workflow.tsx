@@ -91,7 +91,7 @@ export default function Workflow() {
               </div>
               <div className="flex-1 rounded-lg border border-[#1E2126] bg-[#101216] px-4 py-3">
                 <div className="flex items-baseline gap-2">
-                  <span className="font-mono text-[11px] text-[#5A5E66]">
+                  <span className="  text-[11px] text-[#5A5E66]">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <h3 className="text-[14px] font-medium text-[#E4E5E7]">

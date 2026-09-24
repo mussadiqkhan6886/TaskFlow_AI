@@ -34,7 +34,7 @@ export default function DashboardPreview() {
         <span className="h-2.5 w-2.5 rounded-full bg-red-600" />
         <span className="h-2.5 w-2.5 rounded-full bg-yellow-600" />
         <span className="h-2.5 w-2.5 rounded-full bg-green-600" />
-        <span className="ml-3 font-mono text-[11px] text-[#5A5E66]">
+        <span className="ml-3   text-[11px] text-[#5A5E66]">
           app.taskflow.local/dashboard
         </span>
       </div>

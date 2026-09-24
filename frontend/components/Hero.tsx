@@ -9,7 +9,7 @@ export default function Hero() {
     <section id="home" className="mx-auto max-w-6xl px-6 pb-20 pt-16 md:pt-24">
       <div className="grid items-center gap-14 md:grid-cols-2 md:gap-10">
         <div>
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#1E2126] px-3 py-1 font-mono text-[11px] text-[#84878D]">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#1E2126] px-3 py-1   text-[11px] text-[#84878D]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#5B7FFF]" />
             Full-stack learning project
           </div>
