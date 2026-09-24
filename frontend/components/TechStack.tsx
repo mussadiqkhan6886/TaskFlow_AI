@@ -38,13 +38,13 @@ const GROUPS: TechGroup[] = [
   },
 
   {
-    id: "integration",
-    label: "Integration",
+    id: "security",
+    label: "Security & Services",
     items: [
-      { name: "JWT", role: "Authentication" },
-      { name: "bcryptjs", role: "Hashing Password" },
-      { name: "sonner", role: "Toasts" },
-      { name: "Gemini AI", role: "AI summaries & priority" },
+      { name: "JWT", role: "Authentication & authorization" },
+      { name: "bcryptjs", role: "Password hashing" },
+      { name: "express-rate-limit", role: "API rate limiting" },
+      { name: "Gemini AI", role: "AI summaries & priority generation" },
     ],
   },
 ];
