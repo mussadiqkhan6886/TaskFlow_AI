@@ -1,10 +1,11 @@
 import { User } from "lucide-react";
+import Link from "next/link";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 const LINKS = [
-  { label: "GitHub", href: "https://github.com", icon: FaGithub },
-  { label: "Portfolio", href: "#", icon: User },
-  { label: "LinkedIn", href: "https://linkedin.com", icon: FaLinkedin },
+  { label: "GitHub", href: "https://github.com/mussadiqkhan6886/TaskFlow_AI", icon: FaGithub },
+  { label: "Portfolio", href: "http://mussadiqkhan.vercel.app/", icon: User },
+  { label: "LinkedIn", href: "http://linkedin.com/in/mussadiq-khan-dev/", icon: FaLinkedin },
 ];
 
 export default function Footer() {
@@ -16,7 +17,7 @@ export default function Footer() {
         </p>
         <div className="flex items-center gap-5">
           {LINKS.map((link) => (
-            <a
+            <Link
               key={link.label}
               href={link.href}
               target="_blank"
@@ -25,7 +26,7 @@ export default function Footer() {
             >
               <link.icon className="h-3.5 w-3.5" strokeWidth={1.75} />
               {link.label}
-            </a>
+            </Link>
           ))}
         </div>
       </div>
