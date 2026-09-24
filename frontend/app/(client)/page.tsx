@@ -1,26 +1,21 @@
-import Image from 'next/image'
-import React from 'react'
+import DeveloperJourney from "@/components/DeveloperJourney";
+import Engineering from "@/components/Engineering";
+import Features from "@/components/Features";
+import Footer from "@/components/Footer";
+import Hero from "@/components/Hero";
+import TechStack from "@/components/TechStack";
+import Workflow from "@/components/Workflow";
 
-const page = () => {
+export default function Home() {
   return (
-    <main className="flex flex-col gap-2 h-dvh">
-      <div className="h-[55vh] w-full relative">
-        <Image src="/bg-image.jpg" alt="main hero image" fill className="object-bottom object-cover overflow-hidden w-full h-full" />
-      </div>
-      <div className="px-10 py-7">
-        <h1 className='font-semibold text-lg mb-3 uppercase'>Welcome to Repair System</h1>
-        <p>We repair your system quickly and more affordable</p>
-        <div>
-          <div className="flex flex-col my-2">
-            <i>Tech Repair</i>
-            <i>Islamabad, Pakistan</i>
-            <i>+92 300 0000000</i>
-          </div>
-          <p>Owner: <span>Mussadiq Khan</span></p>
-        </div>
-      </div>
+    <main className="min-h-screen bg-[#0A0B0D]">
+      <Hero />
+      <Engineering />
+      <Workflow />
+      <Features />
+      <TechStack />
+      <DeveloperJourney />
+      <Footer />
     </main>
-  )
+  );
 }
-
-export default page

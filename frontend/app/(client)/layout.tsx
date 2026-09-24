@@ -1,15 +1,16 @@
-import ClientHeader from "@/components/ClientHeader";
+import Navbar from "@/components/ClientHeader";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Full Stack Repair Notes App",
-  description: "fullstack repair website that take notes",
+  title: "TaskFlow AI | Full-stack learning project",
+  description:
+    "A full-stack learning project exploring authentication, AI integration, real-time communication, and modern web development practices.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <>
-    <ClientHeader />
+    <Navbar />
         {children}
     </>
   );

@@ -74,3 +74,42 @@ type Message = {
 
     createdAt: string
 };
+import type { LucideIcon } from "lucide-react";
+
+export interface EngineeringArea {
+  id: string;
+  title: string;
+  path: string; // repo-style path shown as a mono label, e.g. "src/middleware/auth.ts"
+  icon: LucideIcon;
+  points: string[];
+}
+
+export interface FeatureItem {
+  id: string;
+  title: string;
+  description: string;
+  icon: LucideIcon;
+}
+
+export interface WorkflowStep {
+  id: string;
+  title: string;
+  detail: string;
+  icon: LucideIcon;
+}
+
+export interface TechItem {
+  name: string;
+  role: string;
+}
+
+export interface TechGroup {
+  id: string;
+  label: string;
+  items: TechItem[];
+}
+
+export interface JourneyPoint {
+  id: string;
+  label: string;
+}

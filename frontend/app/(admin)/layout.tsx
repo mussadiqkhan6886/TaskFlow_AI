@@ -4,8 +4,9 @@ import SocketProvider from "@/components/provider/SocketProvider";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Admin",
-  description: "fullstack repair website that take notes",
+  title: "Admin | TaskFlow AI",
+  description:
+    "A full-stack learning project exploring authentication, AI integration, real-time communication, and modern web development practices.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

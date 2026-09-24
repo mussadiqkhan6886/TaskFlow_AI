@@ -1,8 +1,31 @@
 @import "tailwindcss";
 
 
+html {
+  scroll-behavior: smooth;
+}
+
 @keyframes gradient {
   to {
     background-position: 300% 0;
   }
 }
+
+::selection {
+  background-color: rgba(91, 127, 255, 0.25);
+}
+ 
+:focus-visible {
+  outline: 2px solid #5b7fff;
+  outline-offset: 2px;
+}
+ 
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+ 
