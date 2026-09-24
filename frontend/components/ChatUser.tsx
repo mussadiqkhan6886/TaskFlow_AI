@@ -1,7 +1,21 @@
 import Chat from "./Chat"
 
-const ChatUser = ({userId}: {userId: string}) => {
-    return <Chat name="E" room="user-room" userId={userId} />
+interface ChatUserProps {
+    userId: string;
+    isOpen: boolean;
+    onToggle: () => void;
 }
 
-export default ChatUser
+const ChatUser = ({ userId, isOpen, onToggle }: ChatUserProps) => {
+    return (
+        <Chat 
+            name="E" 
+            room="user-room" 
+            userId={userId} 
+            isOpen={isOpen} 
+            onToggle={onToggle} 
+        />
+    );
+}
+
+export default ChatUser;

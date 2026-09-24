@@ -20,7 +20,7 @@ const AdminHeader = () => {
 
 
   return (
-    <header className="bg-black text-white flex justify-between items-center p-4 ">
+    <header className="bg-slate-950 text-white flex justify-between items-center p-4 ">
       <div>
         <Link href="/admin/dashboard" className="uppercase font-semibold text-lg">Admin Dashboard</Link>
       </div>

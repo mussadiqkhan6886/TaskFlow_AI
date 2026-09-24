@@ -2,10 +2,10 @@ import TanStackQueryProvider from "@/components/provider/TanStackQueryProvider";
 import "./globals.css";
 import { Toaster } from "sonner";
 import Notification from "@/components/Notification";
-import {Inter, JetBrains_Mono} from "next/font/google" 
+import {Roboto} from "next/font/google" 
 import { Metadata } from "next";
 
-const inter = Inter({
+const roboto = Roboto({
   subsets: ["latin"],
   variable: "--font-sans",
 });
@@ -15,7 +15,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`h-full antialiased ${inter.variable}`}
+      className={`h-full antialiased ${roboto.className}`}
     >
       <body className="min-h-full flex flex-col">
         <TanStackQueryProvider>

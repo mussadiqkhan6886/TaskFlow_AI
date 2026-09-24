@@ -15,11 +15,11 @@ const MessageTyping = ({ userTypingId, userId }: Props) => {
 
     return (
         <div className="flex gap-3 items-center">
-            <p className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-300 uppercase">
+            <p className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold relative mt-1 uppercase">
                 {userTypingId.username.charAt(0)}
             </p>
 
-            <p className="text-sm text-zinc-700 animate-pulse">{userTypingId.username} is typing...</p>
+            <p className="text-sm text-zinc-100 font-thin animate-pulse">{userTypingId.username} is typing...</p>
         </div>
     );
 };
