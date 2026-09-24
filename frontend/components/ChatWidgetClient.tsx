@@ -19,7 +19,7 @@ export default function ChatWidgetClient({ userId, isStaff }: ChatWidgetClientPr
     return (
         <aside 
             aria-label="Live Chat Assistant"
-            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-row items-end gap-3 pointer-events-none max-w-[calc(100vw-2rem)]"
+            className="fixed bottom-4 scale-95 sm:scale-100 right-2 sm:bottom-6 sm:right-6 z-50 flex flex-row items-end gap-3 pointer-events-none max-w-[calc(100vw-1rem)]"
         >
             <div className={`pointer-events-auto transition-all duration-300 ${
                 activeRoom === "staff-room" ? "hidden sm:block" : "block"

@@ -18,7 +18,7 @@ const Page = async () => {
   const isAdminOrManager = me.role !== "Employee";
 
   return (
-    <main className="relative min-h-screen bg-slate-950 text-slate-100 p-6 md:p-10 overflow-hidden">
+    <main className="relative min-h-screen bg-slate-950 text-slate-100 p-4 md:p-10 overflow-hidden">
       {/* Background Subtle Gradient Glows */}
       <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-blue-600/10 blur-[130px] rounded-full pointer-events-none" />
       <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-purple-600/10 blur-[130px] rounded-full pointer-events-none" />
