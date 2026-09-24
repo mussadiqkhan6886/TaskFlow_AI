@@ -6,6 +6,8 @@ import {
   Radio,
   Sparkles,
   CheckCircle2,
+  ShieldCheck,
+  MessageCircle,
 } from "lucide-react";
 import { WorkflowStep } from "@/type";
 
@@ -18,32 +20,44 @@ const STEPS: WorkflowStep[] = [
   },
   {
     id: "verify",
-    title: "Authentication verification",
-    detail: "JWT is issued, validated, and role permissions are attached.",
+    title: "JWT verification",
+    detail: "Backend validates access tokens, refresh tokens, and identifies the authenticated user.",
     icon: KeyRound,
+  },
+  {
+    id: "rbac",
+    title: "Role-based access control",
+    detail: "User permissions are checked based on their role: Admin, Manager, or Employee.",
+    icon: ShieldCheck,
   },
   {
     id: "access",
     title: "Dashboard access",
-    detail: "Session confirmed, protected routes and data become available.",
+    detail: "Authorized users can access their dashboard and available features.",
     icon: LayoutDashboard,
   },
   {
     id: "create",
     title: "Create / assign tasks",
-    detail: "Tasks are written to MongoDB and linked to a project and owner.",
+    detail: "Tasks are stored in MongoDB with ownership, assignment, priority, and status information.",
     icon: ListPlus,
   },
   {
     id: "realtime",
-    title: "Real-time updates",
-    detail: "Socket.IO broadcasts the change to everyone in the project room.",
+    title: "Real-time synchronization",
+    detail:"Socket.IO sends live updates and notifications without requiring page refreshes.",
     icon: Radio,
+  },
+  {
+    id: "messages",
+    title: "Real-time communication",
+    detail: "Users communicate through shared chat, while Admin and Managers can access staff communication.",
+    icon: MessageCircle,
   },
   {
     id: "ai",
     title: "AI assistance",
-    detail: "Gemini generates a summary or suggests a priority for the task.",
+    detail: "Gemini AI analyzes task content to generate summaries and priority suggestions.",
     icon: Sparkles,
   },
   {
@@ -59,7 +73,7 @@ export default function Workflow() {
     <section id="workflow" className="mx-auto max-w-6xl px-6 py-20">
       <div className="mb-10 max-w-lg">
         <h2 className="text-2xl font-semibold tracking-tight text-[#E4E5E7]">
-          Request-to-completion workflow
+          Application Workflow
         </h2>
         <p className="mt-2 text-[14px] leading-relaxed text-[#8B8F98]">
           The path a single task takes through the system, from login to
