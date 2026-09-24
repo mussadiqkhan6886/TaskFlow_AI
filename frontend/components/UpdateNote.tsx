@@ -10,6 +10,7 @@ import { NoteType } from '@/type';
 import { generateAi } from '@/server/ai';
 import { toast } from 'sonner';
 import { HiLightningBolt } from 'react-icons/hi';
+import PriorityGenAI from './PriorityGenAI';
 
 const UpdateNote = ({ note, role }: { note: NoteType, role?: string }) => {
   const {
@@ -159,19 +160,7 @@ const UpdateNote = ({ note, role }: { note: NoteType, role?: string }) => {
             className="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5"
           >
             <BarChart2 className="w-3.5 h-3.5 text-amber-400" /> Priority
-             <button
-                  type="button"
-                  onClick={() => generatePriority.mutate()}
-                  disabled={generatePriority.isPending || !data.description.trim()}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 bg-[length:300%_100%] px-3.5 py-1.5 text-xs font-semibold text-white shadow-md shadow-orange-500/20 transition-all hover:animate-[gradient_2s_linear_infinite] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                >
-                  {generatePriority.isPending ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    <HiLightningBolt size={15} />
-                  )}
-                  <span>{generatePriority.isPending ? "Generating..." : "AI Generate Priority"}</span>
-                </button>
+            <PriorityGenAI mutate={generatePriority.mutate} isPending={generatePriority.isPending} description={data.description} />
           </label>
           <div className="relative">
             <select
