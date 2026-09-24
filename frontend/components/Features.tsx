@@ -8,56 +8,72 @@ import {
   FileStack,
   ArrowUpNarrowWide,
   Lock,
+  CheckCircle2,
 } from "lucide-react";
 
 const FEATURES: FeatureItem[] = [
   {
     id: "notes",
-    title: "Create notes",
-    description: "Write and organize notes tied to a project or task.",
+    title: "Create & manage tasks",
+    description:
+      "Create notes, track progress, and manage assigned work.",
     icon: FileText,
   },
   {
-    id: "tasks",
-    title: "Assign tasks",
-    description: "Break work into tasks and assign them to teammates.",
+    id: "assign",
+    title: "Task assignment",
+    description:
+      "Managers and Admins can assign tasks to specific users.",
     icon: ListChecks,
   },
   {
     id: "users",
-    title: "Manage users",
-    description: "Invite, remove, and manage roles for project members.",
+    title: "User management",
+    description:
+      "Admins can create users and manage account access.",
     icon: Users,
   },
   {
     id: "chat",
-    title: "Team chat",
-    description: "Message teammates in real time within a project room.",
+    title: "Real-time chat",
+    description:
+      "Communicate instantly through Socket.IO powered messaging.",
     icon: MessageSquare,
   },
   {
     id: "notifications",
-    title: "Notifications",
-    description: "Instant alerts for assignments, mentions, and updates.",
+    title: "Live notifications",
+    description:
+      "Receive updates when important actions happen.",
     icon: Bell,
   },
   {
     id: "ai-summary",
-    title: "AI summary",
-    description: "Gemini condenses long task threads into a short summary.",
+    title: "AI summaries",
+    description:
+      "Gemini AI generates short summaries from task content.",
     icon: FileStack,
   },
   {
     id: "ai-priority",
-    title: "AI priority",
-    description: "AI suggests which task to tackle next based on context.",
+    title: "AI priority suggestions",
+    description:
+      "AI analyzes tasks and suggests suitable priority levels.",
     icon: ArrowUpNarrowWide,
   },
   {
     id: "permissions",
     title: "Role permissions",
-    description: "Admin, member, and viewer roles gate what each can do.",
+    description:
+      "Admin, Manager, and Employee roles control available actions.",
     icon: Lock,
+  },
+  {
+    id: "status",
+    title: "Task status tracking",
+    description:
+      "Track tasks through different states until completion.",
+    icon: CheckCircle2,
   },
 ];
 
@@ -68,22 +84,23 @@ export default function Features() {
         <h2 className="text-2xl font-semibold tracking-tight text-[#E4E5E7]">
           Application features
         </h2>
-        <p className="mt-2 text-[14px] leading-relaxed text-[#8B8F98]">
-          What the app actually does, from the user's side.
+        <p className="mt-2 text-[15px] leading-relaxed text-[#8B8F98]">
+          Core functionality implemented in the application,
+          from task management to AI and real-time collaboration.
         </p>
       </div>
 
-      <div className="grid gap-px overflow-hidden rounded-lg border border-[#1E2126] bg-[#1E2126] sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-px overflow-hidden rounded-lg border border-[#1E2126] bg-[#1E2126] sm:grid-cols-2 lg:grid-cols-3">
         {FEATURES.map((feature) => (
           <div key={feature.id} className="bg-[#0A0B0D] p-5">
             <feature.icon
-              className="mb-3 h-4 w-4 text-[#5B7FFF]"
+              className="mb-3 h-5 w-5 text-blue-600"
               strokeWidth={1.75}
             />
-            <h3 className="text-[13.5px] font-medium text-[#E4E5E7]">
+            <h3 className="text-[14px] font-medium text-[#E4E5E7]">
               {feature.title}
             </h3>
-            <p className="mt-1.5 text-[12.5px] leading-relaxed text-[#8B8F98]">
+            <p className="mt-1.5 text-[13px] leading-relaxed text-[#8B8F98]">
               {feature.description}
             </p>
           </div>
