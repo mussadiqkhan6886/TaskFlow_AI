@@ -1,48 +1,105 @@
 import { EngineeringArea } from "@/type";
-import { ShieldCheck, Radio, Sparkles, Gauge, Database, Layers } from "lucide-react";
+import {
+  ShieldCheck,
+  Radio,
+  Sparkles,
+  Gauge,
+  Database,
+  Layers,
+  TestTube,
+  Workflow,
+} from "lucide-react";
 
 const AREAS: EngineeringArea[] = [
   {
     id: "auth",
-    title: "Authentication",
-    path: "src/middleware/auth.ts",
+    title: "Authentication & Security",
+    path: "backend/src/controllers/authControllers.ts",
     icon: ShieldCheck,
-    points: ["JWT-based session handling", "Role-based access control"],
+    points: [
+      "JWT access & refresh token flow",
+      "Role-based access control (RBAC)",
+    ],
   },
   {
     id: "realtime",
-    title: "Real-time communication",
-    path: "src/socket/index.ts",
+    title: "Real-time Communication",
+    path: "backend/src/socket/",
     icon: Radio,
-    points: ["Socket.IO rooms per project", "Live messaging & instant notifications"],
+    points: [
+      "Socket.IO rooms and events",
+      "Live messaging & instant notifications",
+    ],
   },
   {
     id: "ai",
-    title: "AI integration",
-    path: "src/service/gemini.ts",
+    title: "AI Integration",
+    path: "backend/src/services/geminiService.ts",
     icon: Sparkles,
-    points: ["Automated task summaries", "AI-generated priority suggestions"],
+    points: [
+      "AI-generated task summaries",
+      "AI priority suggestions",
+    ],
   },
   {
     id: "performance",
-    title: "Performance",
-    path: "src/lib/cache.ts",
+    title: "Performance & Caching",
+    path: "backend/src/config/connectRedis.ts",
     icon: Gauge,
-    points: ["Redis caching on read-heavy routes", "Optimized API request patterns"],
+    points: [
+      "Redis caching for frequently accessed data",
+      "Cache invalidation strategies",
+    ],
   },
   {
     id: "database",
-    title: "Database",
-    path: "src/models/",
+    title: "Database Design",
+    path: "backend/src/models/",
     icon: Database,
-    points: ["MongoDB as the primary store", "Mongoose schemas & validation"],
+    points: [
+      "MongoDB document modeling",
+      "Mongoose schemas, indexing and validation",
+    ],
   },
   {
     id: "frontend",
-    title: "Frontend architecture",
+    title: "Frontend Architecture",
     path: "frontend/app/",
     icon: Layers,
-    points: ["Next.js App Router layout", "TypeScript + React Query for data"],
+    points: [
+      "Next.js App Router architecture",
+      "React Query server state management",
+    ],
+  },
+  {
+    id: "unit-testing",
+    title: "Unit Testing",
+    path: "backend/__tests__/ && frontend/__tests__/",
+    icon: TestTube,
+    points: [
+      "Component and function testing with vitest",
+      "Business logic validation",
+    ],
+  },
+  {
+    id: "integration-testing",
+    title: "API Testing",
+    path: "backend/__tests__/",
+    icon: Workflow,
+    points: [
+      "REST API endpoint testing with supertest",
+      "Authentication and database flow testing",
+    ],
+  },
+  {
+    id: "e2e-testing",
+    title: "End-to-End Testing",
+    path: "e2e/tests/",
+    icon: Workflow,
+    points: [
+      "Browser automation with Playwright",
+      "Complete user workflow testing",
+    ],
   },
 ];
 
@@ -51,7 +108,7 @@ export default function Engineering() {
     <section id="engineering" className="mx-auto max-w-6xl px-6 py-20">
       <div className="mb-10 max-w-lg">
         <h2 className="text-2xl font-semibold tracking-tight text-[#E4E5E7]">
-          Engineering overview
+          Engineering & Architecture
         </h2>
         <p className="mt-2 text-[14px] leading-relaxed text-[#8B8F98]">
           How the backend and frontend are actually put together — the parts
