@@ -160,14 +160,18 @@ const UpdateNote = ({ note, role }: { note: NoteType, role?: string }) => {
           >
             <BarChart2 className="w-3.5 h-3.5 text-amber-400" /> Priority
              <button
-                type="button"
-                onClick={() => generatePriority.mutate()}
-                className="my-1 cursor-pointer relative flex items-center gap-2 overflow-hidden rounded-lg bg-[linear-gradient(90deg,#f59e0b,#ef4444,#f97316,#f59e0b)] bg-[length:300%_100%] px-4 py-2 text-white transition-all duration-300 hover:scale-105 hover:animate-[gradient_2s_linear_infinite] hover:shadow-[0_0_35px_rgba(245,158,11,.5)] active:scale-95">
-                <HiLightningBolt
-                  size={18}
-                />
-                {generatePriority.isPending ? "Generate..." : "Generate"} 
-              </button>
+                  type="button"
+                  onClick={() => generatePriority.mutate()}
+                  disabled={generatePriority.isPending || !data.description.trim()}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 bg-[length:300%_100%] px-3.5 py-1.5 text-xs font-semibold text-white shadow-md shadow-orange-500/20 transition-all hover:animate-[gradient_2s_linear_infinite] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  {generatePriority.isPending ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <HiLightningBolt size={15} />
+                  )}
+                  <span>{generatePriority.isPending ? "Generating..." : "AI Generate Priority"}</span>
+                </button>
           </label>
           <div className="relative">
             <select
