@@ -176,11 +176,6 @@ const Page = async () => {
               </div>
             </div>
 
-            <div className="mt-8 pt-4 border-t border-slate-800 text-center">
-              <span className="text-[11px] font-mono text-slate-600">
-                TaskFlow AI • MongoDB & Express Session
-              </span>
-            </div>
           </aside>
 
         </div>
