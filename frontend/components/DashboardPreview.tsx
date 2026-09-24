@@ -31,9 +31,9 @@ export default function DashboardPreview() {
     <div className="relative rounded-lg border border-[#1E2126] bg-[#101216] p-3 shadow-[0_0_0_1px_rgba(0,0,0,0.2)]">
       {/* window chrome */}
       <div className="mb-3 flex items-center gap-1.5 px-1">
-        <span className="h-2.5 w-2.5 rounded-full bg-[#2A2E35]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#2A2E35]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#2A2E35]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-red-600" />
+        <span className="h-2.5 w-2.5 rounded-full bg-yellow-600" />
+        <span className="h-2.5 w-2.5 rounded-full bg-green-600" />
         <span className="ml-3 font-mono text-[11px] text-[#5A5E66]">
           app.taskflow.local/dashboard
         </span>

@@ -1,4 +1,3 @@
-import LoginHeader from "@/components/LoginHeader";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -10,7 +9,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <>
-    <LoginHeader />
         {children}
     </>
   );
