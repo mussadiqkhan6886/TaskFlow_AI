@@ -1,6 +1,6 @@
 # TaskFlow AI
 
-A full-stack task and collaboration platform where teams create tasks, assign work, chat in real time, and get AI assistance for summarizing and prioritizing notes.
+A full stack task and collaboration platform where teams create tasks, assign work, chat in real time, and get AI assistance for summarizing and prioritizing notes.
 
 I built this project to go deep on the parts of full-stack engineering that are easy to skip in tutorials: refresh-token authentication, role-based authorization, WebSocket-driven real-time features, caching strategy, AI API integration, and automated testing across the stack.
 
