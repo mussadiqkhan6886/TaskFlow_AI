@@ -12,7 +12,7 @@ describe("fetchHelper",()=>{
     beforeEach(()=>{
         vi.clearAllMocks()
 
-        process.env.NEXT_PUBLIC_BASE_URL =
+        process.env.BACKEND_INTERNAL_URL =
         "http://localhost:3000"
     })
 
