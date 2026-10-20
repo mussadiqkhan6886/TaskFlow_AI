@@ -1,7 +1,7 @@
 import { logInDataType } from "@/type";
 
 export const login = async (data: logInDataType) => {
-    const res = await fetch(`${process.env.BACKEND_INTERNAL_URL}/api/auth/login`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/login`, {
         method: "POST",
         credentials: "include",
         body: JSON.stringify(data),
@@ -17,6 +17,6 @@ export const login = async (data: logInDataType) => {
 }
 
 export const logout = async () => {
-    const res = await fetch(`${process.env.BACKEND_INTERNAL_URL}/api/auth/logout`, {method: "POST", credentials: "include"})
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/logout`, {method: "POST", credentials: "include"})
     return res.json()
 }

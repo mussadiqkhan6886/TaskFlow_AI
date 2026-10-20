@@ -8,8 +8,8 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 FROM base AS build
-ARG BACKEND_INTERNAL_URL
-ENV BACKEND_INTERNAL_URL=$BACKEND_INTERNAL_URL
+ARG NEXT_PUBLIC_BASE_URL
+ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .

@@ -5,7 +5,7 @@ export const fetchHelper = async <T>(path: string, options: RequestInit = {}): P
     const cookiesStore = await cookies()
     const token = cookiesStore.toString()
 
-    const res = await fetch(`${process.env.BACKEND_INTERNAL_URL}/api/${path}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/${path}`, {
         ...options,
         headers: { Cookie: token, ...(options.headers || {}) },
     })

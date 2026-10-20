@@ -21,7 +21,7 @@ describe("auth server functions", () => {
         })
 
         expect(fetch).toHaveBeenCalledWith(
-            `${process.env.BACKEND_INTERNAL_URL}/api/auth/login`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/login`,
             {
                 method: "POST",
                 credentials: "include",
@@ -57,7 +57,7 @@ describe("auth server functions", () => {
         const result = await logout()
 
         expect(fetch).toHaveBeenCalledWith(
-            `${process.env.BACKEND_INTERNAL_URL}/api/auth/logout`, {method: "POST", credentials: "include"}
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/logout`, {method: "POST", credentials: "include"}
         )
 
         expect(result.message).toBe("Logged out successfully")

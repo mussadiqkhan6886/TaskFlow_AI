@@ -243,7 +243,7 @@ BACKEND_URL=http://localhost:4000
 
 **frontend/.env**
 ```env
-BACKEND_INTERNAL_URL=http://localhost:4000
+NEXT_PUBLIC_BASE_URL=http://localhost:4000
 ACCESS_TOKEN=your_same_access_token
 ```
 
