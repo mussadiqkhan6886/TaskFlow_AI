@@ -17,6 +17,9 @@ services:
       NODE_ENV: production
       HOSTNAME: "0.0.0.0"
       PORT: "3000"
+      # Browser uses NEXT_PUBLIC_BASE_URL (localhost). Server components
+      # inside this container must reach the backend over the Docker network.
+      INTERNAL_API_URL: ${INTERNAL_API_URL:-http://backend:4000}
 
     ports:
       - "3000:3000"

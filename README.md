@@ -247,6 +247,8 @@ NEXT_PUBLIC_BASE_URL=http://localhost:4000
 ACCESS_TOKEN=your_same_access_token
 ```
 
+When running with Docker Compose, keep `NEXT_PUBLIC_BASE_URL` as `http://localhost:4000` (the URL the browser uses). Compose sets `INTERNAL_API_URL=http://backend:4000` so Next.js server components can reach the backend on the Docker network.
+
 ## Running the Project
 
 ```bash

@@ -1,3 +1,4 @@
+import { getServerApiBaseUrl } from "@/lib/apiBaseUrl";
 import { jwtVerify, errors } from "jose";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -31,7 +32,7 @@ export const proxy = async (req: NextRequest) => {
 
 async function refreshAccessToken(req: NextRequest) {
   const refreshRes = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/refresh`,
+    `${getServerApiBaseUrl()}/api/auth/refresh`,
     {
       method: "POST",
       headers: {

@@ -14,6 +14,7 @@ describe("fetchHelper",()=>{
 
         process.env.NEXT_PUBLIC_BASE_URL =
         "http://localhost:3000"
+        delete process.env.INTERNAL_API_URL
     })
 
 
@@ -45,6 +46,32 @@ describe("fetchHelper",()=>{
     })
 
 
+
+    it("should use INTERNAL_API_URL for server-side fetches", async()=>{
+        process.env.INTERNAL_API_URL = "http://backend:4000"
+
+        vi.mocked(cookies).mockResolvedValue({
+            toString:()=> "accessToken=123"
+        } as any)
+
+        global.fetch = vi.fn()
+        .mockResolvedValue({
+            ok:true,
+            json:()=>Promise.resolve({})
+        })
+
+        await fetchHelper("users")
+
+        expect(fetch)
+        .toHaveBeenCalledWith(
+            "http://backend:4000/api/users",
+            expect.objectContaining({
+                headers:{
+                    Cookie:"accessToken=123"
+                }
+            })
+        )
+    })
 
     it("should send cookies in request", async()=>{
 
