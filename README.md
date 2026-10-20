@@ -279,6 +279,30 @@ npx playwright test
 
 ---
 
+## CI/CD Pipeline (GitHub Actions & Docker)
+
+The repository includes a production-grade CI/CD pipeline configured in [`.github/workflows/ci-cd.yaml`](.github/workflows/ci-cd.yaml) that runs on every push and pull request to `main`:
+
+1. **Backend Job (`test-backend`)**:
+   - Starts a managed Redis service container.
+   - Caches npm dependencies and MongoDB in-memory binaries.
+   - Typechecks and compiles TypeScript (`npm run build`).
+   - Executes the full Vitest suite (`npm run test:run`).
+
+2. **Frontend Job (`test-frontend`)**:
+   - Sets up Node.js with dependency caching.
+   - Validates full Next.js production build (`npm run build`).
+   - Executes frontend unit and integration tests (`npm run test:run`).
+
+3. **Docker Build & E2E Testing Job (`docker-e2e`)**:
+   - Enforced via **`needs: [test-backend, test-frontend]`**: Runs **only** if all backend and frontend unit and integration tests pass.
+   - Executes `docker compose up --build -d` to build the latest backend and frontend Docker images from source and launch the containers.
+   - Waits for the backend (`/health`) and frontend services to be fully healthy and responsive.
+   - Runs the Playwright End-to-End (E2E) test suite directly against the live Dockerized application.
+   - Uploads Playwright HTML trace reports and container logs on failure, and automatically cleans up the containers on completion.
+
+---
+
 ## Engineering Concepts Demonstrated
 
 - Full-stack architecture and separation of concerns between frontend, API, and data layers

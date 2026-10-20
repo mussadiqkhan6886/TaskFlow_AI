@@ -37,7 +37,9 @@ afterAll(async () => {
 
     await mongoose.connection.close()
 
-    await mongoServer.stop()
+    if (mongoServer) {
+        await mongoServer.stop()
+    }
 
     if (redis.isOpen) {
         await redis.quit()

@@ -1,0 +1,198 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ====================================================================
+  # Job 1: Test & Typecheck Backend
+  # ====================================================================
+  test-backend:
+    name: Backend Tests & Build
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Cache MongoDB In-Memory Binaries
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/mongodb-binaries
+          key: ${{ runner.os }}-mongodb-binaries-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-mongodb-binaries-
+
+      - name: Install Dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Typecheck / Compile TypeScript
+        working-directory: ./backend
+        run: npm run build
+
+      - name: Run Backend Tests
+        working-directory: ./backend
+        env:
+          NODE_ENV: test
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          REDIS_PASSWORD: ""
+          ACCESS_TOKEN: 94805d20facb7b2890b4604eedbb2490e2edad4de35d76d0d420618c82b2c5fe55ed214524b783f53590f7da6730945c58b261025550f31ec3121d78fa5ddf93
+          REFRESH_TOKEN: 1d352ae1295be845df26212d729c241589a5f60359f084981cbf6b0e3eb96203f71f807aa49fd24628b292ffacad76b84647b249b5df9e1fc221ed4a71db2566
+          PORT: 4000
+        run: npm run test:run
+
+  # ====================================================================
+  # Job 2: Test & Build Frontend
+  # ====================================================================
+  test-frontend:
+    name: Frontend Tests & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Verify Next.js Production Build
+        working-directory: ./frontend
+        env:
+          NEXT_PUBLIC_BASE_URL: http://localhost:4000
+          INTERNAL_API_URL: http://backend:4000
+          ACCESS_TOKEN: 94805d20facb7b2890b4604eedbb2490e2edad4de35d76d0d420618c82b2c5fe55ed214524b783f53590f7da6730945c58b261025550f31ec3121d78fa5ddf93
+        run: npm run build
+
+      - name: Run Frontend Tests
+        working-directory: ./frontend
+        run: npm run test:run
+
+  # ====================================================================
+  # Job 3: Docker Compose Build & E2E Testing
+  # Builds Docker images for backend & frontend, runs them, and tests with Playwright
+  # ====================================================================
+  docker-e2e:
+    name: Docker Build & E2E Tests
+    needs: [test-backend, test-frontend]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Create Environment Files for Docker
+        run: |
+          cat << 'EOF' > frontend/.env
+          NEXT_PUBLIC_BASE_URL=http://localhost:4000
+          ACCESS_TOKEN="94805d20facb7b2890b4604eedbb2490e2edad4de35d76d0d420618c82b2c5fe55ed214524b783f53590f7da6730945c58b261025550f31ec3121d78fa5ddf93"
+          INTERNAL_API_URL=http://backend:4000
+          EOF
+
+          cat << 'EOF' > backend/.env
+          MONGODB_URI="${{ secrets.MONGODB_URI }}"
+          NODE_ENV=production
+          PORT=4000
+          ACCESS_TOKEN="94805d20facb7b2890b4604eedbb2490e2edad4de35d76d0d420618c82b2c5fe55ed214524b783f53590f7da6730945c58b261025550f31ec3121d78fa5ddf93"
+          REFRESH_TOKEN="1d352ae1295be845df26212d729c241589a5f60359f084981cbf6b0e3eb96203f71f807aa49fd24628b292ffacad76b84647b249b5df9e1fc221ed4a71db2566"
+          REDIS_PASSWORD="${{ secrets.REDIS_PASSWORD }}"
+          REDIS_HOST="${{ secrets.REDIS_HOST }}"
+          REDIS_PORT="${{ secrets.REDIS_PORT }}"
+          GEMINI_AI_API_KEY="${{ secrets.GEMINI_AI_API_KEY }}"
+          FRONTEND_URL=http://localhost:3000
+          BACKEND_URL=http://localhost:4000
+          EOF
+
+      - name: Build and Start Containers with Docker Compose
+        run: |
+          docker compose up --build -d
+
+      - name: Wait for Backend and Frontend Readiness
+        run: |
+          echo "Waiting for Backend to report healthy..."
+          timeout 120 bash -c 'until curl -sf http://localhost:4000/health; do sleep 2; done'
+          echo "Backend is ready!"
+
+          echo "Waiting for Frontend to respond..."
+          timeout 120 bash -c 'until curl -sf http://localhost:3000 > /dev/null; do sleep 2; done'
+          echo "Frontend is ready!"
+
+      - name: Install E2E Dependencies
+        working-directory: ./e2e
+        run: npm ci
+
+      - name: Install Playwright Chromium Browser
+        working-directory: ./e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright E2E Tests Against Docker
+        working-directory: ./e2e
+        run: npx playwright test
+
+      - name: Upload Playwright Report on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
+          retention-days: 7
+
+      - name: Dump Container Logs on Failure
+        if: failure()
+        run: |
+          echo "=== Backend Logs ==="
+          docker compose logs backend
+          echo "=== Frontend Logs ==="
+          docker compose logs frontend
+
+      - name: Teardown Docker Compose Containers
+        if: always()
+        run: |
+          docker compose down -v

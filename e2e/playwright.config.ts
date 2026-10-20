@@ -26,16 +26,16 @@ export default defineConfig({
         {
             command: 'npm run start:e2e',
             cwd: '../backend',
-            url: 'http://localhost:4000/health',   // needs a real health-check route — see below
+            url: 'http://localhost:4000/health',
             timeout: 120_000,
-            reuseExistingServer: !process.env.CI
+            reuseExistingServer: true
         },
         {
             command: 'npm run dev',
             cwd: '../frontend',
             url: 'http://localhost:3000',
             timeout: 120_000,
-            reuseExistingServer: !process.env.CI
+            reuseExistingServer: true
         }
     ]
 })
