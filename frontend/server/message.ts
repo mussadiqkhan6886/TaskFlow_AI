@@ -1,4 +1,5 @@
 import { fetchHelper } from "@/lib/helpers/fetchHelper"
+import { Message } from "@/type"
 
 export const getAllMessages = async (room: string) : Promise<Message[]> => {
 

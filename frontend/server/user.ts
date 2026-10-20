@@ -1,4 +1,5 @@
 import { fetchHelper } from "@/lib/helpers/fetchHelper"
+import { updateUserData, UsersIdType, UserType } from "@/type"
 
 interface me{
     _id: string

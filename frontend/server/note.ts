@@ -1,4 +1,5 @@
 import { fetchHelper } from "@/lib/helpers/fetchHelper"
+import { NoteType, updateNoteData } from "@/type"
 
 export const getAllNotes = async (priority?:string, status?: string) : Promise<NoteType[]> => {
     const result = await fetchHelper<{notes: NoteType[]}>(`notes?priority=${priority}&status=${status}`)
