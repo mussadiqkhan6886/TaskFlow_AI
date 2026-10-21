@@ -2,6 +2,7 @@ import UpdateNote from "@/components/UpdateNote"
 import { renderWithQuery } from "@/lib/helpers/renderWithQuery"
 import { updateNote } from "@/server/note"
 import { getUsersId } from "@/server/user"
+import { NoteType } from "@/type"
 import { screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 

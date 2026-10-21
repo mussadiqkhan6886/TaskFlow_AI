@@ -3,6 +3,7 @@ import Chat from "@/components/Chat";
 import { getAllMessages } from "@/server/message";
 import { socket } from "@/socket";
 import { renderWithQuery } from "@/lib/helpers/renderWithQuery";
+import { Message } from "@/type";
 
 
 vi.mock("@/server/message", () => ({

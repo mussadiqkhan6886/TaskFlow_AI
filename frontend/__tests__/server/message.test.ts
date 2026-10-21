@@ -1,5 +1,6 @@
 import { fetchHelper } from "@/lib/helpers/fetchHelper"
 import { getAllMessages } from "@/server/message"
+import { Message } from "@/type";
 
 vi.mock("@/lib/helpers/fetchHelper", () => ({
     fetchHelper: vi.fn()

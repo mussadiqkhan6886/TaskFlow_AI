@@ -1,5 +1,6 @@
 import { fetchHelper } from "@/lib/helpers/fetchHelper"
 import { createUser, deleteUser, getAllUsers, getMe, getUser, getUsersId, updateUser } from "@/server/user"
+import { UserType } from "@/type"
 
 vi.mock("@/lib/helpers/fetchHelper", () => ({
     fetchHelper: vi.fn()

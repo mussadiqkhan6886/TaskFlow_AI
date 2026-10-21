@@ -1,6 +1,7 @@
 import EditUser from "@/components/EditUser"
 import { renderWithQuery } from "@/lib/helpers/renderWithQuery"
 import { updateUser } from "@/server/user"
+import { UserType } from "@/type"
 import { screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
