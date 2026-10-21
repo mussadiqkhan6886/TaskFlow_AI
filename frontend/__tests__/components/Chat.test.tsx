@@ -1,4 +1,4 @@
-import { screen, fireEvent, waitFor } from "@testing-library/react";
+import { screen, fireEvent } from "@testing-library/react";
 import Chat from "@/components/Chat";
 import { getAllMessages } from "@/server/message";
 import { socket } from "@/socket";
@@ -29,6 +29,7 @@ vi.mock("react-icons/fi", () => ({
     FiX: (props:any)=><span {...props}>close</span>,
     FiInfo: ()=><span>info</span>,
     FiSend: ()=> <span>send</span>,
+    FiMessageSquare: (props:any)=><span {...props}>open</span>,
 }));
 
 
@@ -60,13 +61,15 @@ const mockMessages = [
 
 
 
-const renderComponent = () => {
+const renderComponent = (isOpen = true, onToggle = vi.fn()) => {
 
     return renderWithQuery(
             <Chat
                 name="S"
                 room="staff-room"
                 userId="user1"
+                isOpen={isOpen}
+                onToggle={onToggle}
             />
     )
 }
@@ -120,18 +123,16 @@ describe("Chat component",()=>{
 
     it("opens chat when collapse button clicked",async()=>{
 
-        renderComponent();
+        const onToggle = vi.fn();
+        renderComponent(false, onToggle);
 
-        const open = screen.getByText("open");
+        const open = screen.getByRole("button", {
+            name: /Open S chat/i
+        });
 
         fireEvent.click(open);
 
-        await waitFor(()=>{
-            expect(
-                screen.getByText("Hello team")
-            )
-            .toBeInTheDocument();
-        });
+        expect(onToggle).toHaveBeenCalled();
 
     });
 
@@ -142,7 +143,7 @@ describe("Chat component",()=>{
         renderComponent();
         const input =
             screen.getByPlaceholderText(
-                "Enter your message..."
+                "Type a message..."
             );
 
         fireEvent.change(input,{
@@ -243,7 +244,7 @@ describe("Chat component",()=>{
 
         const input =
             screen.getByPlaceholderText(
-                "Enter your message..."
+                "Type a message..."
             );
 
 

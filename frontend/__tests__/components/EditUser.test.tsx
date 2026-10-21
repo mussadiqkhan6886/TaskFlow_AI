@@ -44,7 +44,7 @@ describe("Edit User", () => {
         const username = screen.getByPlaceholderText("Enter username")
         const email =  screen.getByPlaceholderText("Enter email")
         const role = screen.getByLabelText("Role")
-        const password = screen.getByPlaceholderText("Enter password")
+        const password = screen.getByPlaceholderText("Enter new password")
         const status = screen.getByLabelText("Status")
 
         await user.clear(username)

@@ -74,7 +74,7 @@ describe("Notes Page", () => {
 
 
     expect(
-      screen.getByText("Technotes")
+      screen.getByText("Technotes Workspace")
     ).toBeInTheDocument();
 
 
@@ -137,7 +137,7 @@ describe("Notes Page", () => {
 
 
     expect(
-      screen.getByText("No Notes")
+      screen.getByText("No Technotes Found")
     ).toBeInTheDocument();
 
 

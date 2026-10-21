@@ -20,6 +20,11 @@ describe("delete note", () => {
 
     beforeEach(() => {
         vi.clearAllMocks()
+        vi.spyOn(window, "confirm").mockReturnValue(true)
+    })
+
+    afterEach(() => {
+        vi.restoreAllMocks()
     })
     
     it("will delete note successfully", async () => {

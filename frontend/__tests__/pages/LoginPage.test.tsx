@@ -36,7 +36,7 @@ describe("Login Page", () => {
 
         expect(
             screen.getByRole("button", {
-                name: /Login/i
+                name: /Sign In/i
             })
         ).toBeInTheDocument();
 
@@ -64,7 +64,7 @@ describe("Login Page", () => {
 
         await user.click(
             screen.getByRole("button", {
-                name: /Login/i
+                name: /Sign In/i
             })
         );
 
@@ -108,7 +108,7 @@ describe("Login Page", () => {
 
         await user.click(
             screen.getByRole("button", {
-                name: /Login/i
+                name: /Sign In/i
             })
         );
 
@@ -145,14 +145,14 @@ describe("Login Page", () => {
 
         await user.click(
             screen.getByRole("button", {
-                name: /Login/i
+                name: /Sign In/i
             })
         );
 
         await waitFor(() => {
 
             expect(
-                screen.getByText("Logging in...")
+                screen.getByText("Signing in...")
             ).toBeInTheDocument();
 
         });
