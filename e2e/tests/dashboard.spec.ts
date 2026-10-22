@@ -38,7 +38,7 @@ test("manager dashboard shows manager options", async ({page}) => {
     ).toBeVisible();
 
     await expect(
-        page.getByText(/View User Settings/i)
+        page.getByText(/User Management/i)
     ).toBeVisible();
 });
 
@@ -61,6 +61,6 @@ test("admin dashboard shows admin options", async ({page}) => {
     ).toBeVisible();
 
     await expect(
-        page.getByText(/View User Settings/i)
+        page.getByText(/User Management/i)
     ).toBeVisible();
 });

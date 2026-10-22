@@ -22,11 +22,11 @@ test("admin has full users permission", async ({page}) => {
 
     await expect(page.getByText(username)).toBeVisible()
 
-    await page
-        .getByText(username)
-        .locator("..")
-        .getByRole("link", {name:/Edit/i})
-        .click();
+    const userRow = page.getByRole("row").filter({
+        has: page.getByText(username, { exact: true }),
+    });
+
+    await userRow.getByRole("link", { name: "Edit" }).click();
     
     await page.waitForURL(/\/admin\/dashboard\/users\/.+/);
     
@@ -67,11 +67,11 @@ test("manager can edit and create user", async ({page}) => {
 
     await expect(page.getByText(username)).toBeVisible()
 
-    await page
-        .getByText(username)
-        .locator("..")
-        .getByRole("link", {name:/Edit/i})
-        .click();
+    const userRow = page.getByRole("row").filter({
+        has: page.getByText(username, { exact: true }),
+    });
+
+    await userRow.getByRole("link", { name: "Edit" }).click();
     
     await page.waitForURL(/\/admin\/dashboard\/users\/.+/);
     const updatedName = `${username}-updated`

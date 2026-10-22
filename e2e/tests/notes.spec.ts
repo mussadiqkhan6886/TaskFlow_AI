@@ -93,11 +93,16 @@ test("admin has full note permissions", async ({page})=>{
         page.getByRole("heading", { name: "title note" }).first()
     ).toBeVisible();
 
-    await page
-        .getByText("title note")
-        .locator("..")
-        .getByRole("link", {name:/Edit/i})
-        .click();
+   const note = page
+    .getByTestId("note-card")
+    .filter({
+        has: page.getByRole("heading", {
+        name: "title note",
+        exact: true,
+        }),
+    });
+
+    await note.getByRole("link", { name: "Edit" }).click();
 
     await page.waitForURL(/\/admin\/dashboard\/notes\/.+/);
     
