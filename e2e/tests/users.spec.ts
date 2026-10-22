@@ -30,21 +30,26 @@ test("admin has full users permission", async ({page}) => {
     
     await page.waitForURL(/\/admin\/dashboard\/users\/.+/);
     
-    await page.fill("#username", "ali khan")
+    const name = `name-${Date.now()}`
+    await page.fill("#username", name)
     
     await page.getByRole("button", {name: /Save Changes/i}).click()
     
     await page.waitForURL("/admin/dashboard/users")
     
-    await expect(page.getByText("ali khan")).toBeVisible()
+    await expect(page.getByText(name)).toBeVisible()
     
-    await page
-        .getByText("ali khan")
-        .locator("..")
-        .getByRole("button", {name:/Delete/i})
-        .click();
-    
-    await expect(page.getByText("ali khan")).not.toBeVisible()
+    const updatedUserRow = page.getByRole("row").filter({
+        has: page.getByText(name, { exact: true }),
+    });
+
+    page.once("dialog", async (dialog) => {
+        await dialog.accept();
+    });
+
+    await updatedUserRow.getByRole("button", { name: "Delete" }).click();
+
+    await expect(page.getByText(name)).not.toBeVisible()
 
 })
 test("manager can edit and create user", async ({page}) => {
