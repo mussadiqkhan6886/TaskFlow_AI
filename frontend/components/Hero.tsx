@@ -11,7 +11,7 @@ export default function Hero() {
         <div>
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#1E2126] px-3 py-1   text-[11px] text-[#84878D]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#5B7FFF]" />
-            Full-stack learning project
+            Full stack learning project
           </div>
 
           <h1 className="text-4xl font-semibold tracking-tight text-[#E4E5E7] md:text-5xl">

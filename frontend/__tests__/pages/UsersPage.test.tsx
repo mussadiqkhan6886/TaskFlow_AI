@@ -116,7 +116,7 @@ describe("Users Page", () => {
 
 
     expect(
-      screen.getByText("No users found")
+      screen.getByText("No Users Found")
     ).toBeInTheDocument();
 
 

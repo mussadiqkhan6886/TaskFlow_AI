@@ -80,8 +80,9 @@ test("admin has full note permissions", async ({page})=>{
 
     await page.getByText(/Add New Technote/i).click()
 
+    const title = `title-note-${Date.now()}`
     await page.selectOption("#noteFor", "manager")
-    await page.fill("#title", "title note")
+    await page.fill("#title", title)
     await page.fill("#description", "title note description")
     await page.selectOption("#priority", "Medium")
 
@@ -90,41 +91,46 @@ test("admin has full note permissions", async ({page})=>{
     await page.waitForURL("/admin/dashboard/notes")
 
     await expect(
-        page.getByRole("heading", { name: "title note" }).first()
+        page.getByRole("heading", { name: title }).first()
     ).toBeVisible();
 
-    await page
-        .getByText("title note")
-        .locator("..")
-        .getByRole("link", {name:/Edit/i})
-        .click();
+   const note = page
+    .getByTestId("note-card")
+    .filter({
+        has: page.getByRole("heading", {
+        name: title,
+        exact: true,
+        }),
+    });
+
+    await note.getByRole("link", { name: "Edit" }).click();
 
     await page.waitForURL(/\/admin\/dashboard\/notes\/.+/);
     
     
-    await page.fill("#title", "Employee Testing Note")
+    const updatedTitle = `Employee Testing Note ${Date.now()}`
+    await page.fill("#title", updatedTitle)
     
     await page.getByRole("button", {name: /Save Note/i}).click()
     
     await page.waitForURL("/admin/dashboard/notes")
     
-    await expect(page.getByText("Employee Testing Note")).toBeVisible()
+    await expect(page.getByText(updatedTitle)).toBeVisible()
     
     const noteCard = page
         .getByTestId("note-card")
         .filter({
             has: page.getByRole("heading", {
-                name: "Employee Testing Note"
+                name: updatedTitle
             })
         });
 
+    await page.once("dialog", async (dialog) => {
+        expect(dialog.type()).toBe("confirm");
+        await dialog.accept();
+    });
 
-    await noteCard
-        .getByRole("button", {
-            name: "Delete"
-        })
-        .click();
-
+    await noteCard.getByRole("button", { name: "Delete" }).click();
 
     await expect(noteCard).not.toBeVisible();
 

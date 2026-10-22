@@ -39,7 +39,7 @@ describe("User Search Component", () => {
         render(<Search />);
 
         expect(
-            screen.getByPlaceholderText("Search users...")
+            screen.getByPlaceholderText("Search users by name or email...")
         ).toBeInTheDocument();
 
 
@@ -59,7 +59,7 @@ describe("User Search Component", () => {
 
 
         const input = screen.getByPlaceholderText(
-            "Search users..."
+            "Search users by name or email..."
         );
 
 

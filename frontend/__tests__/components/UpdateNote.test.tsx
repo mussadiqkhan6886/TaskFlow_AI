@@ -2,6 +2,7 @@ import UpdateNote from "@/components/UpdateNote"
 import { renderWithQuery } from "@/lib/helpers/renderWithQuery"
 import { updateNote } from "@/server/note"
 import { getUsersId } from "@/server/user"
+import { NoteType } from "@/type"
 import { screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
@@ -56,10 +57,10 @@ describe("Edit Note", () => {
         await waitFor(() => {
             expect(screen.getByRole("option", {name:"john"})).toBeInTheDocument()
         })
-        const noteFor = screen.getByLabelText("Note For")
+        const noteFor = screen.getByLabelText(/Note For/i)
         const title =  screen.getByPlaceholderText("Enter note title")
         const description = screen.getByPlaceholderText("Write note details...")
-        const priority = screen.getByLabelText("Priority")
+        const priority = screen.getByRole("combobox", { name: /priority/i })
         const status = screen.getByLabelText("Status")
 
         await user.selectOptions(noteFor, "123")

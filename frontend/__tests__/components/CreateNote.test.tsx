@@ -31,7 +31,7 @@ describe("create a note", () => {
     it("shall render create note component", () => {
         renderWithQuery(<CreateNote />)
 
-        expect(screen.getByText("Note For")).toBeInTheDocument()
+        expect(screen.getByText(/Note For/i)).toBeInTheDocument()
     })
 
     it("shall create a new note", async () => {
@@ -62,7 +62,7 @@ describe("create a note", () => {
 
         const user = userEvent.setup()
 
-        await user.selectOptions(screen.getByLabelText("Note For"), "123")
+        await user.selectOptions(screen.getByLabelText(/Note For/i), "123")
 
         await user.type(screen.getByPlaceholderText("Enter note title"), "Hello World")
 
@@ -115,7 +115,7 @@ describe("create a note", () => {
     })
 
         const user = userEvent.setup()
-        await user.selectOptions( screen.getByLabelText("Note For"), "123" );
+        await user.selectOptions( screen.getByLabelText(/Note For/i), "123" );
         
         await user.type( screen.getByPlaceholderText("Enter note title"), "Hello");
         await user.type( screen.getByPlaceholderText("Write your note details..."),"Some description" );

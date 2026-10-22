@@ -1,6 +1,7 @@
 import EditUser from "@/components/EditUser"
 import { renderWithQuery } from "@/lib/helpers/renderWithQuery"
 import { updateUser } from "@/server/user"
+import { UserType } from "@/type"
 import { screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
@@ -44,7 +45,7 @@ describe("Edit User", () => {
         const username = screen.getByPlaceholderText("Enter username")
         const email =  screen.getByPlaceholderText("Enter email")
         const role = screen.getByLabelText("Role")
-        const password = screen.getByPlaceholderText("Enter password")
+        const password = screen.getByPlaceholderText("Enter new password")
         const status = screen.getByLabelText("Status")
 
         await user.clear(username)
