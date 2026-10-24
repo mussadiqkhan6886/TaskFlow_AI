@@ -196,3 +196,27 @@ jobs:
         if: always()
         run: |
           docker compose down -v
+  oidc-test:
+    runs-on: [ubuntu-latest]
+    name: OIDC
+    needs: [test-backend, test-frontend, docker-e2e]
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' ||
+       github.event_name == 'workflow_dispatch')
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+      - name: Configure AWS Credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-region: eu-north-1
+          role-to-assume: ${{ secrets.AWS_IAM }}
+
+      - name: Test AWS Credentials
+        run: aws sts get-caller-identity
