@@ -196,10 +196,13 @@ jobs:
         if: always()
         run: |
           docker compose down -v
-  oidc-test:
-    runs-on: [ubuntu-latest]
-    name: OIDC
+  
+  build-and-push-ecr:
+    name: Build and Push Images to ECR
+    runs-on: ubuntu-latest
     needs: [test-backend, test-frontend, docker-e2e]
+
+    # Publish only from main, never from a pull request.
     if: >-
       github.ref == 'refs/heads/main' &&
       (github.event_name == 'push' ||
@@ -212,11 +215,39 @@ jobs:
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
+
       - name: Configure AWS Credentials using OIDC
         uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: eu-north-1
           role-to-assume: ${{ secrets.AWS_IAM }}
 
-      - name: Test AWS Credentials
-        run: aws sts get-caller-identity
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and Push Backend Image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build \
+            -t $REGISTRY/backend:$IMAGE_TAG \
+            -t $REGISTRY/backend:latest \
+            ./backend
+
+          docker push $REGISTRY/backend:$IMAGE_TAG
+          docker push $REGISTRY/backend:latest
+
+      - name: Build and Push Frontend Image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build \
+            -t $REGISTRY/frontend:$IMAGE_TAG \
+            -t $REGISTRY/frontend:latest \
+            ./frontend
+
+          docker push $REGISTRY/frontend:$IMAGE_TAG
+          docker push $REGISTRY/frontend:latest
