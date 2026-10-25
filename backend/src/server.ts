@@ -19,9 +19,9 @@ initSocket(httpServer)
 connectDB()
 connectRedis()
 socketConfig()
+httpServer.listen(PORT, "0.0.0.0", () => console.log(`Server running on port ${PORT}`));
 mongoose.connection.once("open", () => {
     console.log("MongoDB connected");
-    httpServer.listen(PORT, () : void => console.log(`Server running on port ${PORT}`))
 })
 mongoose.connection.on("error", (err) => {
   console.error("MongoDB connection error:", err);
