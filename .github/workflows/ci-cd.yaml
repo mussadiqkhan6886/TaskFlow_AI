@@ -69,8 +69,8 @@ jobs:
           REDIS_HOST: localhost
           REDIS_PORT: 6379
           REDIS_PASSWORD: ""
-          ACCESS_TOKEN: 94805d20facb7b2890b4604eedbb2490e2edad4de35d76d0d420618c82b2c5fe55ed214524b783f53590f7da6730945c58b261025550f31ec3121d78fa5ddf93
-          REFRESH_TOKEN: 1d352ae1295be845df26212d729c241589a5f60359f084981cbf6b0e3eb96203f71f807aa49fd24628b292ffacad76b84647b249b5df9e1fc221ed4a71db2566
+          ACCESS_TOKEN: "${{ secrets.ACCESS_TOKEN }}"
+          REFRESH_TOKEN: "${{ secrets.REFRESH_TOKEN }}"
           PORT: 4000
         run: npm run test:run
 
@@ -101,7 +101,7 @@ jobs:
         env:
           NEXT_PUBLIC_BASE_URL: http://localhost:4000
           INTERNAL_API_URL: http://backend:4000
-          ACCESS_TOKEN: 94805d20facb7b2890b4604eedbb2490e2edad4de35d76d0d420618c82b2c5fe55ed214524b783f53590f7da6730945c58b261025550f31ec3121d78fa5ddf93
+          ACCESS_TOKEN: "${{ secrets.ACCESS_TOKEN }}"
         run: npm run build
 
       - name: Run Frontend Tests
@@ -132,7 +132,7 @@ jobs:
         run: |
           cat << 'EOF' > frontend/.env
           NEXT_PUBLIC_BASE_URL=http://localhost:4000
-          ACCESS_TOKEN="94805d20facb7b2890b4604eedbb2490e2edad4de35d76d0d420618c82b2c5fe55ed214524b783f53590f7da6730945c58b261025550f31ec3121d78fa5ddf93"
+          ACCESS_TOKEN="${{ secrets.ACCESS_TOKEN }}"
           INTERNAL_API_URL=http://backend:4000
           EOF
 
@@ -140,8 +140,8 @@ jobs:
           MONGODB_URI="${{ secrets.MONGODB_URI }}"
           NODE_ENV=production
           PORT=4000
-          ACCESS_TOKEN="94805d20facb7b2890b4604eedbb2490e2edad4de35d76d0d420618c82b2c5fe55ed214524b783f53590f7da6730945c58b261025550f31ec3121d78fa5ddf93"
-          REFRESH_TOKEN="1d352ae1295be845df26212d729c241589a5f60359f084981cbf6b0e3eb96203f71f807aa49fd24628b292ffacad76b84647b249b5df9e1fc221ed4a71db2566"
+          ACCESS_TOKEN="${{ secrets.ACCESS_TOKEN }}"
+          REFRESH_TOKEN="${{ secrets.REFRESH_TOKEN }}"
           REDIS_PASSWORD="${{ secrets.REDIS_PASSWORD }}"
           REDIS_HOST="${{ secrets.REDIS_HOST }}"
           REDIS_PORT="${{ secrets.REDIS_PORT }}"
@@ -212,11 +212,6 @@ jobs:
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
-      - name: Show OIDC claims
-        run: |
-          TOKEN=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r .value)
-          echo "$TOKEN" | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null | jq '{sub, aud, iss, repository, ref}'
       - name: Configure AWS Credentials using OIDC
         uses: aws-actions/configure-aws-credentials@v6
         with:
