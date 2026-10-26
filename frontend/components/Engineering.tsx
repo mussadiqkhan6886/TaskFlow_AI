@@ -8,6 +8,8 @@ import {
   Layers,
   TestTube,
   Workflow,
+  Cloud,
+  Container,
 } from "lucide-react";
 
 const AREAS: EngineeringArea[] = [
@@ -101,6 +103,47 @@ const AREAS: EngineeringArea[] = [
       "Complete user workflow testing",
     ],
   },
+  
+  {
+    id: "containerization",
+    title: "Containerization & Docker",
+    path: "Dockerfile · compose.yaml",
+    icon: Container,
+    points: [
+      "Multi-stage Docker builds for production",
+      "Docker Compose for frontend and backend",
+    ],
+  },
+  {
+    id: "cloud",
+    title: "AWS Cloud Infrastructure",
+    path: "AWS ECS · ECR · Application Load Balancer",
+    icon: Cloud,
+    points: [
+      "Containerized deployment with ECS Fargate",
+      "ALB routing and external managed services",
+    ],
+  },
+  {
+    id: "cicd",
+    title: "CI/CD & Automated Deployment",
+    path: ".github/workflows/ci-cd.yaml",
+    icon: Workflow,
+    points: [
+      "GitHub Actions for automated testing",
+      "Build and push images to ECR, then deploy to ECS",
+    ],
+  },
+  {
+    id: "devops-security",
+    title: "Cloud Security & Secrets",
+    path: "AWS IAM · OIDC · Secrets Manager",
+    icon: ShieldCheck,
+    points: [
+      "GitHub Actions authentication through AWS OIDC",
+      "Secure configuration using managed secrets",
+    ],
+  },
 ];
 
 export default function Engineering() {
@@ -125,7 +168,7 @@ export default function Engineering() {
                 {area.title}
               </h3>
             </div>
-            <p className="mb-3   text-[11px] text-[#5A5E66]">
+            <p className="mb-3 text-[11px] text-[#7A7F88]">
               {area.path}
             </p>
             <ul className="space-y-1.5">
