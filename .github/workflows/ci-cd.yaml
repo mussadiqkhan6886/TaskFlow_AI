@@ -197,12 +197,13 @@ jobs:
         run: |
           docker compose down -v
   
+  
   build-and-push-ecr:
-    name: Build and Push Images to ECR
+    name: Build, Push and Deploy to ECS
     runs-on: ubuntu-latest
     needs: [test-backend, test-frontend, docker-e2e]
 
-    # Publish only from main, never from a pull request.
+    # Deploy only after tests pass, and only from main.
     if: >-
       github.ref == 'refs/heads/main' &&
       (github.event_name == 'push' ||
@@ -226,28 +227,112 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      # --------------------------------------------------
+      # 1. Build and push both images using this commit SHA
+      # --------------------------------------------------
       - name: Build and Push Backend Image
+        id: backend-image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build \
-            -t $REGISTRY/backend:$IMAGE_TAG \
-            -t $REGISTRY/backend:latest \
+            -t "$REGISTRY/backend:$IMAGE_TAG" \
             ./backend
 
-          docker push $REGISTRY/backend:$IMAGE_TAG
-          docker push $REGISTRY/backend:latest
+          docker push "$REGISTRY/backend:$IMAGE_TAG"
+          echo "image=$REGISTRY/backend:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
 
       - name: Build and Push Frontend Image
+        id: frontend-image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
+          NEXT_PUBLIC_BASE_URL: http://taskflow-alb-862843803.eu-north-1.elb.amazonaws.com
         run: |
           docker build \
-            -t $REGISTRY/frontend:$IMAGE_TAG \
-            -t $REGISTRY/frontend:latest \
+            --build-arg NEXT_PUBLIC_BASE_URL="$NEXT_PUBLIC_BASE_URL" \
+            -t "$REGISTRY/frontend:$IMAGE_TAG" \
             ./frontend
 
-          docker push $REGISTRY/frontend:$IMAGE_TAG
-          docker push $REGISTRY/frontend:latest
+          docker push "$REGISTRY/frontend:$IMAGE_TAG"
+          echo "image=$REGISTRY/frontend:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+          
+      # --------------------------------------------------
+      # 2. Download the CURRENT backend task definition
+      #    and prepare it for a new revision
+      # --------------------------------------------------
+      - name: Download Backend Task Definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition taskflow-backend-task \
+            --query taskDefinition \
+            --output json > backend-task-definition-raw.json
+
+          jq 'del(
+            .taskDefinitionArn,
+            .revision,
+            .status,
+            .requiresAttributes,
+            .compatibilities,
+            .registeredAt,
+            .registeredBy,
+            .deregisteredAt,
+            .ephemeralStorage
+          )' backend-task-definition-raw.json \
+            > backend-task-definition.json
+
+      - name: Insert New Backend Image
+        id: render-backend
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: backend-task-definition.json
+          container-name: backend
+          image: ${{ steps.backend-image.outputs.image }}
+
+      - name: Deploy Backend to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render-backend.outputs.task-definition }}
+          cluster: taskflow-cluster
+          service: taskflow-backend-service
+          wait-for-service-stability: true
+
+      # --------------------------------------------------
+      # 3. Download the CURRENT frontend task definition
+      # --------------------------------------------------
+      - name: Download Frontend Task Definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition taskflow-frontend-task \
+            --query taskDefinition \
+            --output json > frontend-task-definition-raw.json
+
+          jq 'del(
+            .taskDefinitionArn,
+            .revision,
+            .status,
+            .requiresAttributes,
+            .compatibilities,
+            .registeredAt,
+            .registeredBy,
+            .deregisteredAt,
+            .ephemeralStorage
+          )' frontend-task-definition-raw.json \
+            > frontend-task-definition.json
+
+      - name: Insert New Frontend Image
+        id: render-frontend
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: frontend-task-definition.json
+          container-name: frontend
+          image: ${{ steps.frontend-image.outputs.image }}
+
+      - name: Deploy Frontend to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render-frontend.outputs.task-definition }}
+          cluster: taskflow-cluster
+          service: taskflow-frontend-service
+          wait-for-service-stability: true
