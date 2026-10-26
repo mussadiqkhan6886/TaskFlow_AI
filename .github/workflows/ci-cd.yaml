@@ -234,7 +234,7 @@ jobs:
         id: backend-image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}
         run: |
           docker build \
             -t "$REGISTRY/backend:$IMAGE_TAG" \
@@ -247,7 +247,7 @@ jobs:
         id: frontend-image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}
           NEXT_PUBLIC_BASE_URL: http://taskflow-alb-862843803.eu-north-1.elb.amazonaws.com
         run: |
           docker build \
