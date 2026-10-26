@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Terminal } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getMe } from "@/server/user";
 
 const NAV_LINKS = [
   { label: "Home", href: "#home" },
@@ -20,6 +22,13 @@ export default function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const {data:user, isLoading} = useQuery({
+    queryFn: getMe,
+    queryKey: ["me"],
+    retry: false,
+    staleTime: 5 * 60 * 1000,
+  })
 
   return (
     <header
@@ -48,13 +57,16 @@ export default function Navbar() {
             </Link>
           ))}
         </div>
-
-        <Link
-          href="/login"
-          className="rounded-md border border-[#1E2126] px-3.5 py-1.5 text-[13px] text-[#E4E5E7] transition-colors hover:border-[#2A2E35] hover:bg-blue-800 bg-blue-700"
-        >
-          Log in
-        </Link>
+        {isLoading ? (
+          <div className="h-[34px] w-[76px] animate-pulse rounded-md bg-[#1E2126]" />
+        ) : (
+          <Link
+            href={user ? "/admin/dashboard" : "/login"}
+            className="rounded-md border border-[#1E2126] bg-blue-700 px-3.5 py-1.5 text-[13px] text-[#E4E5E7] transition-colors hover:border-[#2A2E35] hover:bg-blue-800"
+          >
+            {user ? "Dashboard" : "Log in"}
+          </Link>
+        )}
       </nav>
     </header>
   );

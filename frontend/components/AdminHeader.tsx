@@ -1,7 +1,7 @@
 'use client';
 
 import { logout } from '@/server/auth';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link'
 import { useRouter } from 'next/navigation';
 import React from 'react'
@@ -10,10 +10,12 @@ import { FiLogOut } from 'react-icons/fi'
 const AdminHeader = () => {
 
   const router = useRouter()
+  const queryClient = useQueryClient()
   const logoutMutation = useMutation({
     mutationFn: logout,
 
     onSuccess(){
+      queryClient.removeQueries({queryKey: ["me"]})
       router.push("/login")
     },
   })

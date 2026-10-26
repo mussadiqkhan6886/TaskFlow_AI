@@ -51,7 +51,7 @@ export const login = async (req: Request, res: Response) : Promise<void> => {
         accessToken,
         {
             httpOnly:true,
-            secure: false,
+            secure: false, // Temporarily disabled because the AWS ALB is using HTTP without a custom domain and HTTPS. Must be set to true once HTTPS is configured for production.
             sameSite:"strict",
             maxAge:15 * 60 * 1000,
             path:"/"
@@ -60,7 +60,7 @@ export const login = async (req: Request, res: Response) : Promise<void> => {
 
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: false,
+        secure: false, // Temporarily disabled because the AWS ALB is using HTTP without a custom domain and HTTPS. Must be set to true once HTTPS is configured for production.
         sameSite: "strict",
         maxAge: 7 * 24 * 60 * 60 * 1000,
         path: "/",
