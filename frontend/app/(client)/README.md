@@ -35,6 +35,7 @@ http://taskflow-alb-862843803.eu-north-1.elb.amazonaws.com\
 -   [CI/CD and AWS deployment](#cicd-and-aws-deployment)
 -   [Security considerations](#security-considerations)
 -   [Future improvements](#future-improvements)
+-   [Try the demo](#demo)
 -   [Author](#author)
 
 ------------------------------------------------------------------------
@@ -257,7 +258,7 @@ flowchart TD
 -   GitHub Actions
 -   Amazon ECR
 -   Amazon ECS Fargate
--   Amazon IAM Role
+-   GitHub OIDC with IAM roles
 -   Application Load Balancer
 -   AWS Secrets Manager
 -   Amazon CloudWatch
@@ -293,7 +294,7 @@ TaskFlow_AI/
 │   ├── server/
 │   └── public/
 ├── e2e/
-│   └── helpers/
+│   ├── helpers/
 │   └── tests/
 ├── compose.yaml
 └── README.md
@@ -576,7 +577,21 @@ Potential next steps include:
 -   Configure a custom domain and HTTPS.
 -   Add pagination and infinite scrolling for large task and message
     lists.
--   Add AI automation to create tasks and assign to user automatically 
+-   Add AI automation to create tasks and assign to user automatically.
+
+------------------------------------------------------------------------
+
+## Try the demo
+
+Live demo: http://taskflow-alb-862843803.eu-north-1.elb.amazonaws.com
+
+| Role     | username       | Password        |
+|----------|----------------|-----------------|
+| Admin    | mussadiq       | `mussadiq6886`  |
+| Employee | mk123          | `mk1234`        |
+
+These are shared demo accounts with sample data. The demo runs over HTTP and
+data may be reset at any time, so don't enter personal information or reuse a real password.
 
 ------------------------------------------------------------------------
 
