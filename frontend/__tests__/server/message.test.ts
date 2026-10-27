@@ -40,16 +40,44 @@ const mockMessages: Message[] = [
 
 describe("get all messages server function", () => {
 
-    it("will fetch messages successfully", async () => {
+    it("will fetch messages successfully without options", async () => {
 
         vi.mocked(fetchHelper).mockResolvedValue({
             success: true,
-            msgs:mockMessages
+            msgs: mockMessages,
+            hasMore: false,
+            nextCursor: null
         })
 
         const result = await getAllMessages("staff-room")
 
         expect(fetchHelper).toHaveBeenCalledWith('messages/staff-room')
-        expect(result).toEqual(mockMessages)
+        expect(result).toEqual({
+            msgs: mockMessages,
+            hasMore: false,
+            nextCursor: null
+        })
+    })
+
+    it("will fetch messages with pagination query params (limit and before cursor)", async () => {
+
+        vi.mocked(fetchHelper).mockResolvedValue({
+            success: true,
+            msgs: mockMessages,
+            hasMore: true,
+            nextCursor: "66f123abc001"
+        })
+
+        const result = await getAllMessages("staff-room", {
+            limit: 15,
+            before: "66f123abc005"
+        })
+
+        expect(fetchHelper).toHaveBeenCalledWith('messages/staff-room?limit=15&before=66f123abc005')
+        expect(result).toEqual({
+            msgs: mockMessages,
+            hasMore: true,
+            nextCursor: "66f123abc001"
+        })
     })
 })

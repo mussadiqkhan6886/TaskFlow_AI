@@ -19,7 +19,7 @@ const MessageTyping = ({ userTypingId, userId }: Props) => {
                 {userTypingId.username.charAt(0)}
             </p>
 
-            <p className="text-sm text-zinc-100 font-thin animate-pulse">{userTypingId.username} is typing...</p>
+            <p className="text-xs text-zinc-100 font-thin animate-pulse">{userTypingId.username} is typing...</p>
         </div>
     );
 };

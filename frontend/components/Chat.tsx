@@ -2,9 +2,9 @@
 import { formatDate } from '@/lib/helpers/formatDate';
 import { getAllMessages } from '@/server/message';
 import { socket } from '@/socket';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import React, { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { FiChevronUp, FiInfo, FiSend, FiX, FiMessageSquare } from 'react-icons/fi';
+import { FiInfo, FiSend, FiX, FiMessageSquare } from 'react-icons/fi';
 import ChatLoader from './ChatLoader';
 import MessageTyping from './MessageTyping';
 import { Message } from '@/type';
@@ -19,36 +19,71 @@ interface ChatProps {
 
 const Chat = ({ name, room, userId, isOpen = false, onToggle }: ChatProps) => {
     const [message, setMessage] = useState("");
+    const [messages, setMessages] = useState<Message[]>([]);
+    const [hasMore, setHasMore] = useState(false);
+    const [nextCursor, setNextCursor] = useState<string | null>(null);
+    const [isFetchingOlder, setIsFetchingOlder] = useState(false);
+
+    const scrollContainerRef = useRef<HTMLDivElement | null>(null);
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
     const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
     const [infoId, setInfoId] = useState('');
     const [userTypingId, setUserTypingId] = useState<null | { userId: string, username: string }>(null);
 
-    const { data: messages = [], isLoading } = useQuery({
+    // Initial 10 messages fetch
+    const { data: initialResponse, isLoading } = useQuery({
         queryKey: [`messages`, room],
-        queryFn: () => getAllMessages(room),
-        staleTime: 30_000
+        queryFn: () => getAllMessages(room, { limit: 10 }),
+        staleTime: 30_000,
     });
 
-    const queryClient = useQueryClient();
+    // Populate state once initial 10 messages arrive
+    useEffect(() => {
+        if (!initialResponse) return;
 
+        const initialMsgs: Message[] = Array.isArray(initialResponse)
+            ? initialResponse
+            : (initialResponse.msgs || []);
+
+        const more: boolean = Array.isArray(initialResponse)
+            ? false
+            : !!initialResponse.hasMore;
+
+        const cursor: string | null = Array.isArray(initialResponse)
+            ? null
+            : (initialResponse.nextCursor || null);
+
+        setMessages(initialMsgs);
+        setHasMore(more);
+        setNextCursor(cursor || (initialMsgs.length > 0 ? initialMsgs[0]._id : null));
+
+        // Auto-scroll to bottom on initial load
+        requestAnimationFrame(() => {
+            messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+        });
+    }, [initialResponse, room]);
+
+    // Scroll to bottom when chat opens
     useEffect(() => {
         if (isOpen) {
             messagesEndRef.current?.scrollIntoView({
                 behavior: "smooth",
             });
+            socket.emit("mark-messages-read", { room });
         }
-    }, [messages, isOpen, userTypingId]);
+    }, [isOpen, room]);
 
+    // Calculate unread count
     const unReadMsgCount = useMemo((): number => {
         return messages.reduce((count: number, m): number => {
-            const senderId = typeof m.senderId === "string" ? m.senderId : m.senderId._id;
+            const senderId = typeof m.senderId === "string" ? m.senderId : m.senderId?._id;
             if (senderId === userId) {
                 return count;
             }
 
             const alreadyRead = m.readBy.some((r: any) => {
-                const readerId = typeof r.readerId === "string" ? r.readerId : r.readerId._id;
+                const readerId = typeof r.readerId === "string" ? r.readerId : r.readerId?._id;
                 return readerId === userId;
             });
 
@@ -56,83 +91,168 @@ const Chat = ({ name, room, userId, isOpen = false, onToggle }: ChatProps) => {
         }, 0);
     }, [messages, userId]);
 
+    // Load older 10 messages when scrolling to top
+    const loadOlderMessages = async () => {
+        const container = scrollContainerRef.current;
+        if (!container || isFetchingOlder || !hasMore || !nextCursor) return;
+
+        setIsFetchingOlder(true);
+        const prevScrollHeight = container.scrollHeight;
+        const prevScrollTop = container.scrollTop;
+
+        try {
+            const response = await getAllMessages(room, {
+                limit: 10,
+                before: nextCursor,
+            });
+
+            const olderMsgs: Message[] = Array.isArray(response)
+                ? response
+                : (response?.msgs || []);
+
+            const more: boolean = Array.isArray(response)
+                ? false
+                : !!response?.hasMore;
+
+            const cursor: string | null = Array.isArray(response)
+                ? null
+                : (response?.nextCursor || null);
+
+            if (olderMsgs.length > 0) {
+                setMessages((prev) => {
+                    const existingIds = new Set(prev.map((m) => m._id));
+                    const uniqueOlder = olderMsgs.filter((m) => !existingIds.has(m._id));
+                    return [...uniqueOlder, ...prev];
+                });
+
+                setHasMore(more);
+                setNextCursor(cursor || (olderMsgs[0]?._id ?? null));
+
+                // Preserve scroll position without jumping
+                requestAnimationFrame(() => {
+                    if (scrollContainerRef.current) {
+                        const newScrollHeight = scrollContainerRef.current.scrollHeight;
+                        const heightDifference = newScrollHeight - prevScrollHeight;
+                        scrollContainerRef.current.scrollTop = prevScrollTop + heightDifference;
+                    }
+                });
+            } else {
+                setHasMore(false);
+                setNextCursor(null);
+            }
+        } catch (err) {
+            console.error("Failed to load older messages", err);
+        } finally {
+            setIsFetchingOlder(false);
+        }
+    };
+
+    // Scroll listener for top pagination
+    const handleScroll = () => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        if (container.scrollTop <= 40 && hasMore && !isFetchingOlder && nextCursor) {
+            loadOlderMessages();
+        }
+    };
+
+    // Listen for new messages (appends to bottom)
     useEffect(() => {
-        const handleMessage = (data: Message) => {
+        const handleNewMessage = (data: Message) => {
             if (data.room !== room) return;
-            queryClient.setQueryData<Message[]>(
-                ["messages", room],
-                (oldMessages = []) => [
-                    ...oldMessages,
-                    data,
-                ]
-            );
-            if (isOpen && data.senderId !== userId) {
+
+            setMessages((prev) => {
+                if (prev.some((m) => m._id === data._id)) return prev;
+                return [...prev, data];
+            });
+
+            const senderId = typeof data.senderId === "string" ? data.senderId : data.senderId?._id;
+            if (isOpen && senderId !== userId) {
                 socket.emit("mark-messages-read", {
                     room,
                 });
             }
+
+            requestAnimationFrame(() => {
+                const container = scrollContainerRef.current;
+                const isMine = senderId === userId;
+                const isNearBottom = container
+                    ? container.scrollHeight - container.scrollTop - container.clientHeight < 150
+                    : true;
+
+                if (isMine || isNearBottom) {
+                    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+                }
+            });
         };
 
-        socket.on("new-message", handleMessage);
-
+        socket.on("new-message", handleNewMessage);
         return () => {
-            socket.off("new-message", handleMessage);
+            socket.off("new-message", handleNewMessage);
         };
-    }, [room, queryClient, userId, isOpen]);
+    }, [room, userId, isOpen]);
 
+    // Online users listener
     useEffect(() => {
         const handleOnlineUsers = (data: string[]) => {
             setOnlineUsers(data);
         };
 
         socket.on("online-users", handleOnlineUsers);
-
         return () => {
             socket.off("online-users", handleOnlineUsers);
         };
     }, [userId]);
 
+    // Messages read listener
     useEffect(() => {
-        const handleMessageRead = (data: { userId: string, room: "staff-room" | "user-room", readAt: string, messageIds: string[], username: string }) => {
+        const handleMessageRead = (data: {
+            userId: string;
+            room: "staff-room" | "user-room";
+            readAt: string;
+            messageIds: string[];
+            username: string;
+        }) => {
             if (data.room !== room) return;
 
-            queryClient.setQueryData<Message[]>(
-                ["messages", room],
-                (oldMessages = []) => oldMessages.map(message => {
-                    if (!data.messageIds.includes(message._id)) {
-                        return message;
+            setMessages((prev) =>
+                prev.map((m) => {
+                    if (!data.messageIds.includes(m._id)) {
+                        return m;
                     }
 
+                    const alreadyRead = m.readBy.some((r: any) => {
+                        const readerId = typeof r.readerId === "string" ? r.readerId : r.readerId?._id;
+                        return readerId === data.userId;
+                    });
+
+                    if (alreadyRead) return m;
+
                     return {
-                        ...message,
+                        ...m,
                         readBy: [
-                            ...message.readBy,
+                            ...m.readBy,
                             {
                                 readerId: {
                                     _id: data.userId,
-                                    username: data.username
+                                    username: data.username,
                                 },
-                                readAt: data.readAt
-                            }
-                        ]
+                                readAt: data.readAt,
+                            },
+                        ],
                     };
                 })
             );
         };
 
         socket.on("messages-read", handleMessageRead);
+        return () => {
+            socket.off("messages-read", handleMessageRead);
+        };
+    }, [room]);
 
-        return () => { socket.off("messages-read", handleMessageRead); };
-    }, [room, queryClient]);
-
-    useEffect(() => {
-        if (isOpen) {
-            socket.emit("mark-messages-read", {
-                room,
-            });
-        }
-    }, [room, isOpen]);
-
+    // Typing listener
     useEffect(() => {
         const handleTyping = (data: { userId: string, username: string }) => {
             setUserTypingId(data);
@@ -146,7 +266,7 @@ const Chat = ({ name, room, userId, isOpen = false, onToggle }: ChatProps) => {
 
     const handleTyping = () => {
         socket.emit("typing", {
-            room
+            room,
         });
     };
 
@@ -155,7 +275,7 @@ const Chat = ({ name, room, userId, isOpen = false, onToggle }: ChatProps) => {
         if (!message.trim()) return;
         socket.emit("send-message", {
             message,
-            room
+            room,
         });
 
         setMessage("");
@@ -171,7 +291,7 @@ const Chat = ({ name, room, userId, isOpen = false, onToggle }: ChatProps) => {
         return () => clearTimeout(timer);
     }, [userTypingId]);
 
-    const isStaffRoom = room === "staff-room" 
+    const isStaffRoom = room === "staff-room";
 
     return (
         <div className="relative flex flex-col items-end">
@@ -196,7 +316,7 @@ const Chat = ({ name, room, userId, isOpen = false, onToggle }: ChatProps) => {
             )}
 
             {isOpen && (
-                <div className={` backdrop-blur-xl relative shadow-2xl border rounded-2xl w-full sm:w-[380px] h-[480px] flex flex-col overflow-hidden transition-all animate-in fade-in slide-in-from-bottom-3 duration-200 ${
+                <div className={`backdrop-blur-xl relative shadow-2xl border rounded-2xl w-full sm:w-[380px] h-[480px] flex flex-col overflow-hidden transition-all animate-in fade-in slide-in-from-bottom-3 duration-200 ${
                     isStaffRoom ? "border-orange-500/30 shadow-orange-500/10 bg-orange-900/15" : "border-slate-800 bg-slate-900/95"
                 }`}>
                     
@@ -234,7 +354,26 @@ const Chat = ({ name, room, userId, isOpen = false, onToggle }: ChatProps) => {
                     {isLoading ? (
                         <ChatLoader />
                     ) : (
-                        <div className={`${isStaffRoom ? "scrollbar-thumb-orange-800" : "scrollbar-thumb-slate-800" } flex-1 overflow-y-auto p-4 space-y-3.5 scrollbar-thin `}>
+                        <div 
+                            ref={scrollContainerRef}
+                            onScroll={handleScroll}
+                            className={`${isStaffRoom ? "scrollbar-thumb-orange-800" : "scrollbar-thumb-slate-800" } flex-1 overflow-y-auto p-4 space-y-3.5 scrollbar-thin `}
+                        >
+                            {/* Loading older messages indicator */}
+                            {isFetchingOlder && (
+                                <div className="py-2 flex items-center justify-center gap-2 text-xs text-slate-400">
+                                    <span className="w-3.5 h-3.5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
+                                    <span>Loading older messages...</span>
+                                </div>
+                            )}
+
+                            {/* Beginning of chat history badge */}
+                            {!hasMore && messages.length > 0 && (
+                                <div className="py-2 text-center text-[11px] text-slate-500 font-medium">
+                                    Beginning of chat history
+                                </div>
+                            )}
+
                             {messages.map((m: Message) => {
                                 const sender =
                                     m.sender ??

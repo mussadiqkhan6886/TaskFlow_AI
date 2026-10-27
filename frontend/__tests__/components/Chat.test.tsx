@@ -1,4 +1,4 @@
-import { screen, fireEvent } from "@testing-library/react";
+import { screen, fireEvent, act } from "@testing-library/react";
 import Chat from "@/components/Chat";
 import { getAllMessages } from "@/server/message";
 import { socket } from "@/socket";
@@ -83,7 +83,11 @@ describe("Chat component",()=>{
 
         vi.clearAllMocks();
 
-        vi.mocked(getAllMessages).mockResolvedValue(mockMessages as Message[]);
+        vi.mocked(getAllMessages).mockResolvedValue({
+            msgs: mockMessages as Message[],
+            hasMore: false,
+            nextCursor: null
+        });
 
     });
 
@@ -116,7 +120,8 @@ describe("Chat component",()=>{
 
         expect(getAllMessages)
         .toHaveBeenCalledWith(
-            "staff-room"
+            "staff-room",
+            { limit: 10 }
         );
 
     });
@@ -266,5 +271,104 @@ describe("Chat component",()=>{
 
     });
 
+    it("appends new incoming message at bottom of list", async () => {
+        let newMessageHandler: ((data: Message) => void) | undefined;
+        vi.mocked(socket.on).mockImplementation((event: string, handler: any) => {
+            if (event === "new-message") {
+                newMessageHandler = handler;
+            }
+            return socket as any;
+        });
+
+        renderComponent();
+
+        expect(await screen.findByText("Hello team")).toBeInTheDocument();
+
+        // Simulate incoming message via socket
+        act(() => {
+            if (newMessageHandler) {
+                newMessageHandler({
+                    _id: "2",
+                    message: "A newly arrived message",
+                    room: "staff-room",
+                    senderId: {
+                        _id: "user2",
+                        username: "employee1",
+                        role: "Employee"
+                    },
+                    readBy: [],
+                    createdAt: "2026-09-22T12:00:00Z"
+                });
+            }
+        });
+
+        expect(await screen.findByText("A newly arrived message")).toBeInTheDocument();
+
+        // Both messages must be present, with older first and newest last
+        const allMsgElements = screen.getAllByText(/Hello team|A newly arrived message/);
+        expect(allMsgElements[0]).toHaveTextContent("Hello team");
+        expect(allMsgElements[1]).toHaveTextContent("A newly arrived message");
+    });
+
+    it("loads older messages when scrolling to top", async () => {
+        vi.mocked(getAllMessages)
+            .mockResolvedValueOnce({
+                msgs: [
+                    {
+                        _id: "10",
+                        message: "Initial page message",
+                        room: "staff-room",
+                        senderId: { _id: "user1", username: "admin", role: "Admin" },
+                        readBy: [],
+                        createdAt: "2026-09-22T10:00:00Z"
+                    }
+                ],
+                hasMore: true,
+                nextCursor: "10"
+            })
+            .mockResolvedValueOnce({
+                msgs: [
+                    {
+                        _id: "5",
+                        message: "Older loaded message",
+                        room: "staff-room",
+                        senderId: { _id: "user1", username: "admin", role: "Admin" },
+                        readBy: [],
+                        createdAt: "2026-09-22T08:00:00Z"
+                    }
+                ],
+                hasMore: false,
+                nextCursor: null
+            });
+
+        renderComponent();
+
+        expect(await screen.findByText("Initial page message")).toBeInTheDocument();
+
+        // Find scrollable container and fire scroll event near top (scrollTop: 20)
+        const scrollableContainer = screen.getByText("Initial page message").closest(".overflow-y-auto");
+        expect(scrollableContainer).not.toBeNull();
+
+        if (scrollableContainer) {
+            Object.defineProperty(scrollableContainer, "scrollTop", { value: 20, writable: true });
+            Object.defineProperty(scrollableContainer, "scrollHeight", { value: 500, writable: true });
+
+            await act(async () => {
+                fireEvent.scroll(scrollableContainer);
+            });
+        }
+
+        expect(getAllMessages).toHaveBeenCalledWith("staff-room", {
+            limit: 10,
+            before: "10"
+        });
+
+        expect(await screen.findByText("Older loaded message")).toBeInTheDocument();
+
+        // Verify older message is prepended above initial message
+        const messages = screen.getAllByText(/Older loaded message|Initial page message/);
+        expect(messages[0]).toHaveTextContent("Older loaded message");
+        expect(messages[1]).toHaveTextContent("Initial page message");
+    });
 
 });

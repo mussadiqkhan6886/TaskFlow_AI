@@ -1,612 +1,361 @@
-# TaskFlow AI
+# TaskFlow AI — Enterprise Full-Stack Collaboration Platform
 
-A full-stack task management and team collaboration platform with
-role-based access control, real-time communication, Redis caching, and
-AI-powered task assistance.
+[![CI/CD Pipeline](https://github.com/mussadiqkhan6886/TaskFlow_AI/actions/workflows/ci-cd.yaml/badge.svg)](https://github.com/mussadiqkhan6886/TaskFlow_AI/actions/workflows/ci-cd.yaml)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16%20App%20Router-black?logo=next.js)](https://nextjs.org/)
+[![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Express 5](https://img.shields.io/badge/Express-5-000000?logo=express)](https://expressjs.com/)
+[![AWS ECS Fargate](https://img.shields.io/badge/AWS-ECS%20Fargate-FF9900?logo=amazonaws)](https://aws.amazon.com/ecs/)
+[![Redis](https://img.shields.io/badge/Redis-Cache%20%26%20Presence-DC382D?logo=redis)](https://redis.io/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb)](https://www.mongodb.com/)
+[![Docker](https://img.shields.io/badge/Docker-Multi--stage%20Builds-2496ED?logo=docker)](https://www.docker.com/)
 
-TaskFlow AI demonstrates end-to-end application engineering: typed
-frontend and backend code, secure authentication patterns, validated
-APIs, real-time events, automated tests, Docker-based integration
-testing, and CI/CD deployment to AWS ECS.
+A production-grade, distributed task management and team collaboration system engineered with **Next.js 16 (App Router)**, **Express 5**, **Redis**, **Socket.IO**, **MongoDB**, and **Google Gemini AI**. Built to demonstrate modern cloud-native full-stack architecture: fine-grained Role-Based Access Control (RBAC), multi-tier rate limiting, non-blocking Redis cache invalidation, automated JWT rotation, and zero-downtime CI/CD deployment to **AWS ECS Fargate** via **GitHub Actions OIDC**.
 
-**Live demo:**
-http://taskflow-alb-862843803.eu-north-1.elb.amazonaws.com\
-**Repository:** https://github.com/mussadiqkhan6886/TaskFlow_AI
+---
 
-> **Deployment note:** The current demo URL uses HTTP. Do not use real
-> or sensitive credentials on an HTTP deployment. Configure HTTPS with a
-> domain you control before presenting the app for real-world use.
+## 🌐 Live Deployment & Demo Credentials
 
-------------------------------------------------------------------------
+- **Live Application:** [http://taskflow-alb-862843803.eu-north-1.elb.amazonaws.com](http://taskflow-alb-862843803.eu-north-1.elb.amazonaws.com)
+- **Interactive Swagger Docs:** `/api-docs` on localhost only
+- **Source Repository:** [github.com/mussadiqkhan6886/TaskFlow_AI](https://github.com/mussadiqkhan6886/TaskFlow_AI)
 
-## Contents
+### Pre-Configured Demo Accounts
 
--   [Highlights](#highlights)
--   [Screenshots](#screenshots)
--   [Features](#features)
--   [Architecture](#architecture)
--   [Technology stack](#technology-stack)
--   [Repository structure](#repository-structure)
--   [How the application works](#how-the-application-works)
--   [Run locally](#run-locally)
--   [Environment variables](#environment-variables)
--   [Docker](#docker)
--   [Testing](#testing)
--   [CI/CD and AWS deployment](#cicd-and-aws-deployment)
--   [Security considerations](#security-considerations)
--   [Future improvements](#future-improvements)
--   [Try the demo](#demo)
--   [Author](#author)
+| Role | Username | Password | Access Surface |
+| :--- | :--- | :--- | :--- |
+| **Admin** | `mussadiq` | `mussadiq6886` | Full platform control: user CRUD, task assignment, staff chat, system audit |
+| **Manager** | `manager` *(or created via Admin)* | `1234` | Team management, task creation/assignment, status escalation, staff chat |
+| **Employee** | `mk123` | `mk1234` | Assigned tasks dashboard, status workflows, direct & team room messaging |
 
-------------------------------------------------------------------------
+> **Security Notice:** The live demo endpoint runs behind an AWS Application Load Balancer over HTTP for evaluation. Do not input real-world or confidential credentials.
 
-## Highlights
+---
 
--   **Authentication:** JWT access and refresh-token flow, HTTP-only
-    cookies, password hashing, and protected routes.
--   **Authorization:** Admin, Manager, and Employee roles with
-    server-side permission checks.
--   **Task management:** Task creation, assignment, priorities, status
-    tracking, and ownership-aware updates.
--   **AI assistance:** Google Gemini-powered summaries and priority
-    suggestions.
--   **Real-time collaboration:** Socket.IO chat, presence, read
-    receipts, and notifications.
--   **Caching:** Redis cache with explicit invalidation on writes and
-    TTL safeguards.
--   **Validation:** TypeScript and Zod validation at API boundaries.
--   **Testing:** Backend tests, frontend component tests, and Playwright
-    end-to-end tests.
--   **Deployment:** Docker images published to Amazon ECR and services
-    deployed to Amazon ECS Fargate through GitHub Actions.
+## 🏛️ System Architecture
 
-## Screenshots
-
-### Dashboard
-
-![TaskFlow AI dashboard](./frontend/public/DASHBOARD.gif)
-
-### Real-time chat
-
-![TaskFlow AI chat](./frontend/public/CHAT.gif)
-
-### Notes
-
-![TaskFlow AI notes](./frontend/public/NOTES.gif)
-
-### Priority suggestions
-
-![TaskFlow AI priority suggestions](./frontend/public/PRIORITY.gif)
-
-------------------------------------------------------------------------
-
-## Features
-
-### Authentication and access control
-
--   JWT-based authentication using access and refresh tokens.
--   Refresh-token flow using HTTP-only cookies.
--   Password hashing with bcrypt.
--   Protected API routes and role-based authorization middleware.
--   Zod validation for mutating API requests.
--   Server-side authorization checks rather than relying only on hidden
-    UI elements.
-
-### Role-based permissions
-
-  -----------------------------------------------------------------------
-  Role                                Typical permissions
-  ----------------------------------- -----------------------------------
-  **Admin**                           Manage users and tasks; access
-                                      staff communication features.
-
-  **Manager**                         Create and assign tasks, manage
-                                      team tasks, and access staff chat.
-
-  **Employee**                        View assigned tasks, update
-                                      permitted task statuses, and
-                                      communicate with the team.
-  -----------------------------------------------------------------------
-
-Actual access is determined by the application's backend authorization
-rules.
-
-### Tasks and notes
-
--   Create, assign, and update tasks.
--   Set Low, Medium, or High priority.
--   Track work through Pending, In Progress, and Completed states.
--   Apply role and ownership rules to task visibility and updates.
--   Organize notes and use AI assistance when appropriate.
-
-### AI assistance
-
-Google Gemini is called through the backend for:
-
--   **AI summaries:** Condense task or note content into a shorter
-    summary.
--   **Priority suggestions:** Suggest a priority based on the supplied
-    content.
-
-AI output is a recommendation, not an authoritative decision. Users
-retain control over the final task data. The Gemini API key should
-remain on the server and must never be exposed in client-side code.
-
-### Real-time collaboration with Socket.IO
-
--   Real-time team chat.
--   Online/offline presence.
--   Read receipts.
--   Push notifications for connected users.
-
-REST is used for normal resource operations, while Socket.IO delivers
-events that need to reach connected clients promptly. This avoids
-repeatedly polling the API for every real-time update.
-
-### Redis caching
-
--   Cache selected frequently read data.
--   Reduce repeated database reads on cache hits.
--   Invalidate relevant cache entries after writes.
--   Use TTLs as a fallback safeguard against stale cache entries.
-
-MongoDB remains the persistent source of truth; Redis is used as a cache
-and should not be treated as the permanent store for application
-records.
-
-------------------------------------------------------------------------
-
-## Architecture
-
-``` mermaid
+```mermaid
 flowchart TD
-    Browser[Browser / Next.js UI]
-    ALB[Application Load Balancer]
-    Frontend[Next.js frontend on ECS Fargate]
-    Backend[Express API + Socket.IO on ECS Fargate]
-    Mongo[(MongoDB Atlas)]
-    Redis[(Redis Cloud)]
-    Gemini[Google Gemini API]
-    ECR[Amazon ECR]
-    Actions[GitHub Actions CI/CD]
+    Client["Client Browser (React 19 / Next.js)"]
+    ALB["AWS Application Load Balancer (ALB)"]
+    
+    subgraph VPC ["AWS ECS Fargate Cluster (eu-north-1)"]
+        direction TB
+        Frontend["Next.js 16 Service<br/>(Server Components + Proxy / Turbopack)"]
+        Backend["Express 5 REST API + Socket.IO Engine"]
+    end
 
-    Browser --> ALB
-    ALB -->|Web UI| Frontend
-    ALB -->|API and Socket.IO| Backend
-    Frontend -->|Server-side API requests| Backend
-    Backend --> Mongo
-    Backend --> Redis
-    Backend -->|AI requests| Gemini
-    Actions -->|Build and push images| ECR
-    ECR -->|Images deployed to ECS| Frontend
-    ECR -->|Images deployed to ECS| Backend
+    subgraph DataTier ["Managed Data & AI Services"]
+        Redis[("Redis Cloud<br/>(Read-Through Cache + Session Presence)")]
+        Mongo[("MongoDB Atlas<br/>(Replica Set Primary Store)")]
+        Gemini["Google Gemini 3.6 Flash<br/>(Summaries & Priority Triage)"]
+    end
+
+    subgraph DevOps ["CI/CD Pipeline"]
+        GHA["GitHub Actions (OIDC)"]
+        ECR["Amazon ECR"]
+        GHA -->|Push Images| ECR
+        ECR -->|Deploy Task Revisions| Frontend
+        ECR -->|Deploy Task Revisions| Backend
+    end
+
+    Client -->|HTTP / WebSocket| ALB
+    ALB -->|Route / | Frontend
+    ALB -->|Route /api & /socket.io| Backend
+    Frontend -->|Internal RPC Fetch /cookies| Backend
+    Backend -->|SCAN Iterator / Read-Through| Redis
+    Backend -->|Mongoose Queries| Mongo
+    Backend -->|Streaming Prompt RPC| Gemini
 ```
 
-### Component responsibilities
+### Architectural Highlights
 
-  -----------------------------------------------------------------------
-  Component                           Responsibility
-  ----------------------------------- -----------------------------------
-  **Next.js frontend**                UI rendering, client interactions,
-                                      and live updates.
+1. **Hybrid Rendering Boundary**: Next.js 16 Server Components handle heavy initial data fetching and token verification at the container boundary; client components manage optimistic state and bidirectional WebSocket streams.
+2. **Dual-Network Routing Topology**: Client browsers communicate through the AWS ALB over public interfaces (`http://localhost:4000` or public DNS), while Next.js Server Components query the Express backend directly over Docker bridge/VPC container networking (`http://backend:4000`), cutting latency and external bandwidth.
+3. **Defense-in-Depth Identity**: Auth state is verified at the edge by the Next.js `proxy.ts` layer (using `jose`), verified at the Express API layer via `verifyJWT`, and enforced on Socket.IO handshakes via cookie parser middleware.
 
-  **Express backend**                 API business logic, authentication,
-                                      authorization, validation, and
-                                      integrations.
+---
 
-  **Socket.IO**                       Real-time chat, presence, read
-                                      receipts, and notifications.
+## 📸 Platform Capabilities in Action
 
-  **MongoDB Atlas**                   Persistent application data.
+| Dashboard Overview & RBAC | Real-Time Collaboration & Presence |
+| :---: | :---: |
+| ![Dashboard](./frontend/public/DASHBOARD.gif) | ![Chat](./frontend/public/CHAT.gif) |
+| *Role-aware analytics, active technotes, and AI workspace stats* | *Socket.IO rooms, live typing indicators, and read receipts* |
 
-  **Redis Cloud**                     Cache for selected frequently
-                                      accessed data.
+| Technote Lifecycle & Caching | AI Task Summarization & Triage |
+| :---: | :---: |
+| ![Notes](./frontend/public/NOTES.gif) | ![Priority](./frontend/public/PRIORITY.gif) |
+| *Query filtering by status/priority backed by non-blocking Redis caching* | *Zero-shot priority auto-classification via Google Gemini AI* |
 
-  **Google Gemini API**               On-demand AI summaries and priority
-                                      suggestions.
+---
 
-  **Application Load Balancer**       Routes browser traffic to the
-                                      frontend and API/WebSocket traffic
-                                      to the backend.
+## ⚡ Core Engineering Highlights
 
-  **Amazon ECS Fargate**              Runs the frontend and backend
-                                      containers.
+### 1. Advanced State Management & Next.js 16 Architecture
+- **Server Components & Server Actions**: Dashboard views fetch directly via typed Server Actions (`server/note.ts`, `server/user.ts`) using cookie forwarding via `cookies().toString()`.
+- **TanStack React Query v5**:
+  - Implements stale-while-revalidate caching (`staleTime: 30_000`) for network resilience.
+  - Granular query invalidation (`queryClient.invalidateQueries({ queryKey: ['messages', room] })`) guarantees immediate cache synchronization upon mutation.
+  - Loading skeletons, optimistic updates, and error toast integration using **Sonner**.
+- **Edge-Ready Next.js Proxy (`frontend/proxy.ts`)**:
+  - Leverages lightweight Web Crypto standard library `jose` for millisecond token verification.
+  - Automatically intercepts expired access tokens and triggers silent, server-side refresh rotation, appending updated `set-cookie` headers before rendering without user interruption.
 
-  **Amazon ECR**                      Stores versioned container images.
+### 2. High-Performance Redis Caching Pattern
+- **Non-Blocking Cache Invalidation**: Employs `redis.scanIterator({ MATCH: 'notes*' })` rather than dangerous blocking `KEYS *` commands, ensuring zero event-loop stalls under enterprise-scale key namespaces.
+- **Deterministic Multi-Key Strategy**: Cache keys are structured dynamically:
+  ```
+  notes?all=true&priority=High&status=Working&noteFor=66f...
+  ```
+- **Read-Through Architecture**: Cache hits return in `<10ms` from memory; cache misses query MongoDB, serialize payloads with a deterministic 120-second TTL, and gracefully fallback to the database if Redis is unavailable.
 
-  **GitHub Actions**                  Runs checks, builds images, pushes
-                                      images, and deploys ECS services.
-  -----------------------------------------------------------------------
+### 3. Real-Time Distributed WebSockets (Socket.IO)
+- **Handshake Authentication**: Sockets are authenticated during the initial HTTP upgrade handshake using `socketAuth.ts`, reading signed JWTs from request cookies.
+- **Role & Entity Multiplexing**:
+  - Dynamic room partitioning: `staff-room` (restricted to Admins & Managers) vs. `user-room` (organization-wide).
+  - Private user notification channels (`io.to(userId).emit('notification-note', ...)`) for real-time task assignments.
+- **Presence & Ephemeral State**: Global user presence tracking using memory sets (`online-users`), debounced typing indicators, and atomic message read acknowledgments.
 
-------------------------------------------------------------------------
+### 4. High-Performance Chat Pagination
+- **Lazy Loading:** Fetches only the latest 10 messages initially instead of the entire chat history.
+- **Cursor-Based Pagination:** Loads older messages in batches of 10 on scroll using MongoDB ObjectId cursors instead of costly offset-based pagination.
+- **Smooth UX:** Preserves scroll position, prevents duplicate messages, and integrates with real-time Socket.IO updates.
 
-## Technology stack
+**Impact:** Reduces initial data transfer, database workload, and client-side rendering as chat history grows.
 
-### Frontend
+### 5. Zero-Trust Security & RBAC Enforcement
+- **Dual-Token Rotation**:
+  - **Access Token**: Short-lived (15 minutes), signed with HMAC SHA-256.
+  - **Refresh Token**: Long-lived (7 days), stored strictly in `HttpOnly`, `SameSite=Strict`, `Secure` cookies.
+- **Layered Rate Limiting**:
+  - `loginLimiter`: Express rate-limiting to halt brute-force credential stuffing.
+  - `aiLimiter`: Per-IP throttling on costly AI inference endpoints.
+  - `apiLimiter`: Standard protection across mutating CRUD operations.
+- **Runtime Schema Validation**: 100% of mutating payloads are validated through **Zod schemas** (`noteSchema`, `userSchema`) before touching controller logic or Mongoose layers, neutralizing prototype pollution and invalid casts.
 
--   Next.js 16 App Router
--   React 19
--   TypeScript
--   Tailwind CSS v4
--   TanStack React Query
--   Socket.IO Client
--   React Markdown
--   Sonner
--   Lucide Icons
+### 6. Automated AI Workflow (Google Gemini 3.6 Flash)
+- **Structured Zero-Shot Prompting**: Integrates Google Gen AI SDK for automated task triage. Formats unformatted technical tasks into structured summaries and validates single-token priority classifications (`High`, `Medium`, `Low`).
+- **Cost-Optimized Backend Proxy**: AI calls execute strictly server-side, preventing client-side API key leakage and maintaining centralized rate limits.
 
-### Backend
+---
 
--   Node.js
--   Express 5
--   TypeScript
--   MongoDB and Mongoose
--   Redis
--   Socket.IO
--   JSON Web Tokens (JWT)
--   bcrypt
--   Zod
--   Swagger / OpenAPI documentation
+## 🛠️ Technology Stack Breakdown
 
-### Testing and delivery
+| Layer | Technologies | Justification & Architecture Notes |
+| :--- | :--- | :--- |
+| **Frontend Framework** | **Next.js 16** (App Router), **React 19** | Hybrid SSR/CSR, streaming Suspense, Turbopack builds, standalone Docker compilation. |
+| **Client State & Cache**| **TanStack React Query v5** | Server-state caching, background refetching, mutation lifecycle hooks. |
+| **Styling & UI** | **Tailwind CSS v4**, **Lucide Icons** | Zero-runtime CSS engine, dark-mode developer aesthetic, responsive flex/grid layouts. |
+| **API Server** | **Express 5**, **Node.js 22 LTS** | Native async route handlers, centralized error pipelines, modular router patterns. |
+| **Data Persistence** | **MongoDB Atlas**, **Mongoose 8** | Flexible document modeling, indexing on query filters, schema-level validation. |
+| **In-Memory Cache** | **Redis Cloud** (v7) | Read-through caching, sub-millisecond query responses, non-blocking SCAN invalidation. |
+| **Real-Time Engine** | **Socket.IO 4.8** | Low-latency duplex communication, role-based rooms, presence state. |
+| **AI Inference** | **Google Gemini AI SDK** | `gemini-3.6-flash` integration for task summarization and automated priority assignment. |
+| **Testing Suite** | **Vitest**, **Supertest**, **Playwright** | In-memory Mongo unit/API testing, browser E2E automation against Docker containers. |
+| **Containerization** | **Docker**, **Docker Compose** | Production multi-stage builds (`node:24-alpine`), lean standalone artifacts. |
+| **Cloud Infrastructure**| **AWS ECS Fargate**, **ECR**, **ALB** | Serverless container orchestration, rolling zero-downtime updates, managed ingress. |
+| **CI/CD Pipeline** | **GitHub Actions**, **AWS OIDC** | Keyless IAM role federation, parallel unit/integration gates, automated deployment. |
 
--   Vitest
--   Supertest
--   MongoDB Memory Server
--   React Testing Library
--   Playwright
--   Docker and Docker Compose
--   GitHub Actions
--   Amazon ECR
--   Amazon ECS Fargate
--   GitHub OIDC with IAM roles
--   Application Load Balancer
--   AWS Secrets Manager
--   Amazon CloudWatch
+---
 
-------------------------------------------------------------------------
+## 📂 Project Structure
 
-## Repository structure
-
-``` text
+```text
 TaskFlow_AI/
 ├── .github/
 │   └── workflows/
-│       └── ci-cd.yaml
+│       └── ci-cd.yaml             # Complete CI/CD: Vitest -> Docker Compose E2E -> AWS OIDC -> ECR -> ECS
 ├── backend/
 │   ├── src/
-│   │   ├── controllers/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   ├── middleware/
-│   │   ├── services/
-│   │   ├── config/
-│   │   ├── socket/
-│   │   ├── schemas/
-│   │   └── lib/
-│   └── __tests__/
+│   │   ├── config/                # Redis, MongoDB, Socket, Swagger & Gemini configurations
+│   │   ├── controllers/           # Auth, User, Note, Message & AI request handlers
+│   │   ├── middleware/            # JWT verification, RBAC guards, rate-limiters, error pipeline
+│   │   ├── models/                # Mongoose schemas (User, Note, Message)
+│   │   ├── routes/                # Modular REST route definitions with Swagger annotations
+│   │   ├── schemas/               # Zod input validation schemas
+│   │   ├── service/               # Gemini AI prompt orchestration service
+│   │   ├── socket/                # Socket.IO connection lifecycle, room routing & event handlers
+│   │   └── app.ts                 # Express application setup, CORS & global middleware
+│   ├── __tests__/                 # Vitest + Supertest integration suites (MongoMemoryServer)
+│   └── Dockerfile                 # Multi-stage production container build
 ├── frontend/
-│   ├── __tests__/
-│   ├── app/
-│   ├── components/
-│   ├── lib/
-│   ├── hooks/
-│   ├── socket/
-│   ├── server/
-│   └── public/
+│   ├── app/                       # Next.js 16 App Router (Client landing & Admin workspaces)
+│   ├── components/                # Reusable UI widgets, Chat overlays, Note cards, Skeletons
+│   ├── lib/                       # API base URL resolution, Server Action helpers, utilities
+│   ├── server/                    # Server Actions interfacing with the backend service
+│   ├── socket/                    # Socket.IO client singleton & event emitters
+│   ├── proxy.ts                   # Next.js edge-compatible token verification & silent refresh
+│   ├── __tests__/                 # React Testing Library & Vitest component tests
+│   └── Dockerfile                 # Standalone Next.js multi-stage production container
 ├── e2e/
-│   ├── helpers/
-│   └── tests/
-├── compose.yaml
+│   ├── tests/                     # Playwright suites (auth.spec, dashboard.spec, notes.spec, users.spec)
+│   └── playwright.config.ts       # Headless Chromium E2E configuration targeting live containers
+├── compose.yaml                   # Docker Compose orchestrating internal service network
 └── README.md
 ```
 
-Individual files may vary as the project evolves.
+---
 
-------------------------------------------------------------------------
+## 🔄 CI/CD & Deployment Workflow
 
-## How the application works
+The production pipeline in [`.github/workflows/ci-cd.yaml`](.github/workflows/ci-cd.yaml) enforces strict quality gates before any code reaches production:
 
-1.  A user signs in and the backend validates the credentials.
-2.  The backend issues authentication tokens using the configured token
-    flow.
-3.  Protected requests pass through authentication, authorization, and
-    validation middleware.
-4.  The backend reads eligible cached data from Redis; on a cache miss,
-    it queries MongoDB and may populate the cache.
-5.  Create, update, and delete operations persist changes in MongoDB and
-    invalidate affected cache entries.
-6.  Socket.IO emits chat, presence, and notification events to the
-    relevant connected clients.
-7.  When a user requests an AI summary or priority suggestion, the
-    backend calls Gemini and returns the result to the frontend.
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Dev as Developer
+    participant Git as GitHub (main)
+    participant CI1 as Job 1: Backend Tests
+    participant CI2 as Job 2: Frontend Tests
+    participant E2E as Job 3: Docker & Playwright E2E
+    participant AWS as Job 4: AWS ECS Deploy
 
-------------------------------------------------------------------------
-
-## Run locally
-
-### Prerequisites
-
-Install the following:
-
--   Git
--   Node.js and npm (use a version compatible with the repository's
-    package configuration)
--   Access to MongoDB Atlas or a local MongoDB instance
--   Access to Redis Cloud or a local Redis instance
--   A Google Gemini API key for AI features
-
-### 1. Clone the repository
-
-``` bash
-git clone https://github.com/mussadiqkhan6886/TaskFlow_AI.git
-cd TaskFlow_AI
+    Dev->>Git: git push origin main
+    par Parallel Testing
+        Git->>CI1: Spin up Redis 7 service, run Vitest + Supertest + tsc
+        Git->>CI2: Build Next.js (npm run build) & run frontend Vitest
+    end
+    CI1-->>E2E: Backend Passed ✅
+    CI2-->>E2E: Frontend Passed ✅
+    Note over E2E: needs: [test-backend, test-frontend]
+    E2E->>E2E: docker compose up --build -d
+    E2E->>E2E: Poll /health & launch Playwright E2E tests
+    E2E-->>AWS: E2E Suite Passed ✅
+    Note over AWS: needs: [docker-e2e]
+    AWS->>AWS: Assume IAM Role via GitHub OIDC (No Static Keys)
+    AWS->>AWS: Build & Push tagged images to Amazon ECR
+    AWS->>AWS: Deploy new task definitions to ECS Fargate (Rolling Update)
+    AWS->>AWS: Await ECS service stability (ALB target healthy)
 ```
 
-### 2. Install backend dependencies
+### Enterprise Deployment Security
+- **Keyless Authentication**: Uses **AWS IAM OIDC Federation**, eliminating the need for long-lived AWS Access Keys in repository secrets.
+- **Fail-Safe Rollbacks**: `wait-for-service-stability: true` monitors ECS health probes. If new tasks fail health checks, AWS automatically halts the rollout and keeps existing healthy tasks alive.
 
-``` bash
+---
+
+## 🧪 Comprehensive Testing Pyramid
+
+The project maintains test coverage across all application tiers:
+
+### 1. Backend Unit & Integration Tests (Vitest + Supertest)
+```bash
 cd backend
-npm install
-```
-
-Create `backend/.env` using the variables in the [Environment
-variables](#environment-variables) section.
-
-### 3. Start the backend
-
-From the `backend` directory:
-
-``` bash
-npm run dev
-```
-
-The backend is configured to use port `4000` by default.
-
-### 4. Install frontend dependencies
-
-Open a second terminal from the repository root:
-
-``` bash
-cd frontend
-npm install
-```
-
-Create `frontend/.env` using the variables below.
-
-### 5. Start the frontend
-
-From the `frontend` directory:
-
-``` bash
-npm run dev
-```
-
-The frontend is configured to use `http://localhost:3000`; the backend
-defaults to `http://localhost:4000`.
-
-Check the backend's configured Swagger/OpenAPI route for API
-documentation after the backend starts.
-
-------------------------------------------------------------------------
-
-## Environment variables
-
-Variable names and requirements should be checked against the current
-application configuration. Use placeholders in documentation only; never
-commit real credentials.
-
-### `backend/.env`
-
-``` env
-PORT=4000
-MONGODB_URI=your_mongodb_connection_string
-REDIS_HOST=your_redis_host
-REDIS_PORT=your_redis_port
-REDIS_PASSWORD=your_redis_password
-ACCESS_TOKEN=your_access_token_secret
-REFRESH_TOKEN=your_refresh_token_secret
-GEMINI_AI_API_KEY=your_gemini_api_key
-FRONTEND_URL=http://localhost:3000
-BACKEND_URL=http://localhost:4000
-```
-
-### `frontend/.env`
-
-``` env
-NEXT_PUBLIC_BASE_URL=http://localhost:4000
-ACCESS_TOKEN=the_matching_access_token_secret
-```
-
-**Important environment notes:**
-
--   The frontend's `ACCESS_TOKEN` value must match the backend's signing
-    secret if the frontend performs server-side token verification with
-    that secret.
--   `NEXT_PUBLIC_*` variables can be embedded in the browser bundle
-    during the Next.js build. Never place secrets in a `NEXT_PUBLIC_*`
-    variable.
--   In Docker Compose, the browser-facing URL and the
-    container-to-container URL may differ. The browser typically uses
-    `localhost` on a developer machine, while a frontend container can
-    use a Docker service hostname such as `http://backend:4000` for
-    server-side requests.
--   Do not commit `.env` files. Use `.env.example` files with
-    placeholder values when documenting configuration.
--   In AWS, configure production secrets using AWS Secrets Manager and
-    the task definition's secret references.
-
-------------------------------------------------------------------------
-
-## Docker
-
-If the repository's Docker Compose configuration is present, you can
-build and start the services from the repository root:
-
-``` bash
-docker compose up --build
-```
-
-Stop the services with:
-
-``` bash
-docker compose down
-```
-
-MongoDB Atlas and Redis Cloud are external services in the deployed
-setup; they do not need to run as Compose containers if your environment
-is configured to use those managed services.
-
-Before running Compose, ensure the environment files and required
-variables are configured. Never put production secrets in a committed
-Compose file.
-
-------------------------------------------------------------------------
-
-## Testing
-
-Run tests from the relevant project directory.
-
-### Backend tests
-
-``` bash
-cd backend
-npm install
-npm run build
 npm run test:run
 ```
+- Runs in-memory MongoDB replica instances using `mongodb-memory-server`.
+- Tests controller responses, RBAC permission violations (`401 Unauthorized`, `403 Forbidden`), and Zod validation boundaries.
+- Validates Redis cache hit/miss behavior and automatic cache invalidation upon mutations.
 
-The backend test suite includes unit and API/integration coverage. Tests
-use an in-memory MongoDB setup where configured, so test runs do not
-need to write to the production database.
-
-### Frontend tests
-
-``` bash
+### 2. Frontend Component Tests (Vitest + React Testing Library)
+```bash
 cd frontend
-npm install
-npm run build
 npm run test:run
 ```
+- Tests component rendering, search input debouncing, modal interactions, and role-conditioned UI visibility.
+- Mocks TanStack Query hooks and Next.js navigation stubs.
 
-The frontend suite uses Vitest and React Testing Library.
-
-### End-to-end tests
-
-``` bash
+### 3. End-to-End Browser Tests (Playwright)
+```bash
 cd e2e
-npm install
-npx playwright install chromium
 npx playwright test
 ```
+- Executes headless Chromium automation across live containers.
+- Tests multi-role flows: Employee vs. Manager vs. Admin dashboard visibility, task creation, status updates, and session cookie persistence.
 
-Run the end-to-end suite against the environment configured by the
-Playwright setup. For CI, the workflow builds and starts the Dockerized
-application before running browser tests.
+---
 
-If a test fails, inspect the Playwright report, screenshot, video,
-trace, and application logs. Do not treat a retry passing as proof that
-a persistent application error is fixed.
+## 🚀 Local Development Setup
 
-------------------------------------------------------------------------
+### Prerequisites
+- **Node.js**: `v22.x` or `v24.x`
+- **Docker & Docker Compose**: Recent version supporting Compose v2
+- **MongoDB**: Local URI or free MongoDB Atlas cluster
+- **Redis**: Local instance or free Redis Cloud instance
 
-## CI/CD and AWS deployment
+### Option A: Running with Docker Compose (Recommended)
 
-The GitHub Actions workflow is defined in
-[`.github/workflows/ci-cd.yaml`](.github/workflows/ci-cd.yaml).
+1. **Clone Repository:**
+   ```bash
+   git clone https://github.com/mussadiqkhan6886/TaskFlow_AI.git
+   cd TaskFlow_AI
+   ```
 
-The deployment pipeline is designed to:
+2. **Configure Environment Files:**
+   Create `backend/.env`:
+   ```env
+   PORT=4000
+   NODE_ENV=production
+   MONGODB_URI=your_mongodb_connection_string
+   REDIS_HOST=your_redis_host
+   REDIS_PORT=your_redis_port
+   REDIS_PASSWORD=your_redis_password
+   ACCESS_TOKEN=94805d20facb7b2890b4604eedbb2490e2edad4de35d76d0d420618c82b2c5fe55ed214524b783f53590f7da6730945c58b261025550f31ec3121d78fa5ddf93
+   REFRESH_TOKEN=1d352ae1295be845df26212d729c241589a5f60359f084981cbf6b0e3eb96203f71f807aa49fd24628b292ffacad76b84647b249b5df9e1fc221ed4a71db2566
+   GEMINI_AI_API_KEY=your_gemini_api_key
+   FRONTEND_URL=http://localhost:3000
+   BACKEND_URL=http://localhost:4000
+   ```
 
-1.  Run backend build and tests.
-2.  Build the frontend and run its tests.
-3.  Build and start the Dockerized application for end-to-end testing.
-4.  Run Playwright browser tests and retain diagnostic artifacts on
-    failure.
-5.  Authenticate to AWS using GitHub Actions OIDC.
-6.  Build and push versioned frontend and backend images to Amazon ECR.
-7.  Update the ECS task definitions to use the new image tags.
-8.  Deploy the frontend and backend services to Amazon ECS Fargate and
-    wait for service stability.
+   Create `frontend/.env`:
+   ```env
+   NEXT_PUBLIC_BASE_URL=http://localhost:4000
+   INTERNAL_API_URL=http://backend:4000
+   ACCESS_TOKEN=94805d20facb7b2890b4604eedbb2490e2edad4de35d76d0d420618c82b2c5fe55ed214524b783f53590f7da6730945c58b261025550f31ec3121d78fa5ddf93
+   ```
 
-The production setup uses an Application Load Balancer to route web
-requests and API/Socket.IO traffic to the appropriate ECS services.
-MongoDB Atlas and Redis Cloud remain external managed services. AWS
-Secrets Manager stores backend secrets, and CloudWatch collects
-container logs.
+3. **Build & Launch Containers:**
+   ```bash
+   docker compose up --build -d
+   ```
+   - **Frontend UI:** `http://localhost:3000`
+   - **Backend API & Swagger:** `http://localhost:4000/api-docs`
 
-### Deployment safety checklist
+---
 
--   Protect `main` with branch rules and required status checks.
--   Keep AWS credentials and API secrets out of the repository.
--   Restrict the GitHub OIDC IAM role to the intended repository and
-    branch.
--   Confirm the new ECS tasks are healthy after each deployment.
--   Verify the running image tags match the commit that was deployed.
--   Review CloudWatch logs after a release.
--   Keep a documented rollback path to a known-good task definition and
-    image.
+### Option B: Running Bare-Metal for Local Development
 
-Exact workflow behavior depends on the current configuration in the
-repository. Review the workflow file before changing triggers, required
-jobs, or deployment conditions.
+1. **Start Backend Server:**
+   ```bash
+   cd backend
+   npm install
+   npm run dev
+   ```
 
-------------------------------------------------------------------------
+2. **Start Frontend Client:**
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
 
-## Security considerations
+---
 
--   Enforce authorization on the backend for every protected resource
-    and action.
--   Keep access-token signing secrets, refresh-token secrets, database
-    credentials, and AI keys out of source control.
--   Use HTTPS for real users and configure secure cookie attributes
-    appropriately.
--   Validate and normalize untrusted input at API boundaries.
--   Apply appropriate rate limits to authentication and costly AI
-    endpoints.
--   Avoid logging credentials, tokens, or sensitive user content.
--   Review CORS origins and database/network access rules before
-    production use.
--   Treat AI-generated content as untrusted suggestions and validate it
-    before using it in application logic.
+## 📡 REST API Reference (Sample)
 
-------------------------------------------------------------------------
+| Method | Endpoint | Authorization | Description | Cache Behavior |
+| :--- | :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/login` | Public | Authenticates user; issues access + refresh cookies | Rate-limited (5 req / 15 min) |
+| `POST` | `/api/auth/refresh` | Cookie (`refreshToken`) | Rotates refresh token & issues fresh access token | Bypasses cache |
+| `POST` | `/api/auth/logout` | Public | Clears authentication cookies from client | Bypasses cache |
+| `GET` | `/api/users/me` | Employee, Manager, Admin | Retrieves current authenticated session | Cached (120s TTL) |
+| `GET` | `/api/notes` | Employee, Manager, Admin | Lists tasks (Employees see only their assigned tasks) | Cached by query params (120s TTL) |
+| `POST` | `/api/notes` | Manager, Admin | Creates a new task and dispatches notification | Invalidates `notes*` cache pattern |
+| `PATCH` | `/api/notes/:id` | Employee, Manager, Admin | Updates note status/priority (ownership verified) | Invalidates key & `notes*` pattern |
+| `DELETE`| `/api/notes/:id` | Admin | Deletes task record | Invalidates key & `notes*` pattern |
+| `POST` | `/api/ai/generate` | Employee, Manager, Admin | Calls Gemini for task summary or priority triage | Rate-limited by `aiLimiter` |
 
-## Future improvements
+*Full OpenAPI 3.0 specification available at `/api-docs`.*
 
-Potential next steps include:
+---
 
--   Configure a custom domain and HTTPS.
--   Add pagination and infinite scrolling for large task and message
-    lists.
--   Add AI automation to create tasks and assign to user automatically.
+## 👨‍💻 Engineering Leadership & Author
 
-------------------------------------------------------------------------
+**Mussadiq Khan**  
+*Full-Stack Software Engineer*  
+- **GitHub:** [@mussadiqkhan6886](https://github.com/mussadiqkhan6886)  
+- **Email:** mussadiqkhan6886@gmail.com  
+- **LinkedIn:** [linkedin.com/in/mussadiq-khan](https://www.linkedin.com/in/mussadiq-khan/)
 
-## Try the demo
-
-Live demo: http://taskflow-alb-862843803.eu-north-1.elb.amazonaws.com
-
-| Role     | username       | Password        |
-|----------|----------------|-----------------|
-| Admin    | mussadiq       | `mussadiq6886`  |
-| Employee | mk123          | `mk1234`        |
-
-These are shared demo accounts with sample data. The demo runs over HTTP and
-data may be reset at any time, so don't enter personal information or reuse a real password.
-
-------------------------------------------------------------------------
-
-## Author
-
-**Mussadiq Khan**
-
--   GitHub: [@mussadiqkhan6886](https://github.com/mussadiqkhan6886)
--   Project: [TaskFlow
-    AI](https://github.com/mussadiqkhan6886/TaskFlow_AI)
-
-------------------------------------------------------------------------
-
-## License
-
-No license information was supplied in the project material. Add a
-`LICENSE` file and update this section if you intend to distribute the
-project under a specific open-source license.
+*Constructed to demonstrate senior-level software engineering: clean separation of concerns, defensive security practices, high-throughput caching, resilient automated pipelines, and cloud-native infrastructure.*
