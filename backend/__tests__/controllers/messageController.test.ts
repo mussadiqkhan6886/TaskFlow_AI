@@ -134,7 +134,7 @@ describe("message controller", () => {
                 room: "staff-room"
             },
             query: {
-                limit: "15",
+                limit: "10",
                 before: "507f1f77bcf86cd799439011"
             }
         }

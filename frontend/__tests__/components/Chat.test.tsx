@@ -121,7 +121,7 @@ describe("Chat component",()=>{
         expect(getAllMessages)
         .toHaveBeenCalledWith(
             "staff-room",
-            { limit: 15 }
+            { limit: 10 }
         );
 
     });
@@ -359,7 +359,7 @@ describe("Chat component",()=>{
         }
 
         expect(getAllMessages).toHaveBeenCalledWith("staff-room", {
-            limit: 15,
+            limit: 10,
             before: "10"
         });
 
