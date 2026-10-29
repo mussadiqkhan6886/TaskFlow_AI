@@ -291,8 +291,8 @@ npx playwright test
    REDIS_HOST=your_redis_host
    REDIS_PORT=your_redis_port
    REDIS_PASSWORD=your_redis_password
-   ACCESS_TOKEN=94805d20facb7b2890b4604eedbb2490e2edad4de35d76d0d420618c82b2c5fe55ed214524b783f53590f7da6730945c58b261025550f31ec3121d78fa5ddf93
-   REFRESH_TOKEN=1d352ae1295be845df26212d729c241589a5f60359f084981cbf6b0e3eb96203f71f807aa49fd24628b292ffacad76b84647b249b5df9e1fc221ed4a71db2566
+   ACCESS_TOKEN=access_token
+   REFRESH_TOKEN=refresh_token
    GEMINI_AI_API_KEY=your_gemini_api_key
    FRONTEND_URL=http://localhost:3000
    BACKEND_URL=http://localhost:4000
@@ -302,7 +302,7 @@ npx playwright test
    ```env
    NEXT_PUBLIC_BASE_URL=http://localhost:4000
    INTERNAL_API_URL=http://backend:4000
-   ACCESS_TOKEN=94805d20facb7b2890b4604eedbb2490e2edad4de35d76d0d420618c82b2c5fe55ed214524b783f53590f7da6730945c58b261025550f31ec3121d78fa5ddf93
+   ACCESS_TOKEN=access_token
    ```
 
 3. **Build & Launch Containers:**
