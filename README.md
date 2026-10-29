@@ -356,6 +356,6 @@ npx playwright test
 *Full-Stack Software Engineer*  
 - **GitHub:** [@mussadiqkhan6886](https://github.com/mussadiqkhan6886)  
 - **Email:** mussadiqkhan6886@gmail.com  
-- **LinkedIn:** [linkedin.com/in/mussadiq-khan](https://www.linkedin.com/in/mussadiq-khan/)
+- **LinkedIn:** [linkedin.com/in/mussadiq-khan](https://www.linkedin.com/in/mussadiq-khan-dev/)
 
 *Constructed to demonstrate senior-level software engineering: clean separation of concerns, defensive security practices, high-throughput caching, resilient automated pipelines, and cloud-native infrastructure.*
