@@ -126,13 +126,13 @@ export const logout = async (req: Request, res: Response) => {
     res.clearCookie("refreshToken", {
         httpOnly: true,
         sameSite: "strict",
-        secure: process.env.NODE_ENV === "production",
+        secure: false, // Temporarily disabled because the AWS ALB is using HTTP without a custom domain and HTTPS. Must be set to true once HTTPS is configured for production.
         path: "/"
     })
     res.clearCookie("accessToken", {
         httpOnly: true,
         sameSite: "strict",
-        secure: process.env.NODE_ENV === "production",
+        secure: false, // Temporarily disabled because the AWS ALB is using HTTP without a custom domain and HTTPS. Must be set to true once HTTPS is configured for production.
         path: "/"
     })
 
