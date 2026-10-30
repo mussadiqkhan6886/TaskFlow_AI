@@ -111,7 +111,7 @@ export const refresh = async (req: Request, res: Response) => {
 
             res.cookie("accessToken", accessToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
+                secure: false, // Temporarily disabled because the AWS ALB is using HTTP without a custom domain and HTTPS. Must be set to true once HTTPS is configured for production.
                 sameSite: "strict",
                 maxAge: 15 * 60 * 1000,
                 path: "/"
