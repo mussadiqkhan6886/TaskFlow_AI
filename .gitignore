@@ -12,6 +12,8 @@ frontend/.next/
 frontend/out/
 backend/dist/
 backend/build/
+frontend/coverage/
+backend/coverage/
 
 # Playwright
 node_modules/
